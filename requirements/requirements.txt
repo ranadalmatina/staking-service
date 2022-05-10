@@ -1,0 +1,10 @@
+# Postgres and Django
+psycopg2-binary==2.9.3
+django==4.0.4
+
+# Environment variable libraries
+django-environ==0.8.1
+dj-database-url==0.5.0
+
+# For static file serving
+whitenoise==6.0.0
