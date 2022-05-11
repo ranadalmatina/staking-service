@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+import environ
+
+# Setup Django environ
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'notss.urls'
+ROOT_URLCONF = 'ss.urls'
 
 TEMPLATES = [
     {
@@ -67,17 +72,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'notss.wsgi.application'
+WSGI_APPLICATION = 'ss.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default='postgres://ranaventures:ranaventures@postgres:5432/staking_service'),
 }
 
 
