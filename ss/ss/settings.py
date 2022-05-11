@@ -130,3 +130,5 @@ FIREBLOCKS_XPUB = env('FIREBLOCKS_XPUB')
 FIREBLOCKS_API_KEY = env('FIREBLOCKS_API_KEY', default=None)
 # The private key can be either a file path to the key on disk or can directly contain the private key data
 FIREBLOCKS_PRIVATE_KEY = env('FIREBLOCKS_PRIVATE_KEY', default=None)
+
+FIREBLOCKS_DEFAULT_VAULT_ID = 0
