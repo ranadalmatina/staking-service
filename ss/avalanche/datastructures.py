@@ -1,3 +1,5 @@
+from .tools import num_to_int
+
 class EVMOutput:
     def __init__(self, address: bytes, amount: bytes, asset_id: bytes):
         self.address = address
@@ -13,8 +15,8 @@ class EVMInput(EVMOutput):
         super().__init__(address, amount, asset_id)
         self.nonce = nonce
         assert len(self.nonce) == 8
-    
-        
+
+
 class SECPTransferOutput:
     def __init__(self, type_id: bytes, amount: bytes, locktime: bytes, threshold: bytes, addresses: list[bytes]):
         self.type_id = type_id
@@ -38,9 +40,10 @@ class TransferableOutput:
 
 
 class EVMExportTx:
-    def __init__(self, typeID: bytes, networkID: bytes, blockchainID: bytes, destinationChain: bytes, # noqa
+    def __init__(self, networkID: bytes, blockchainID: bytes, destinationChain: bytes, # noqa
                  inputs: list[EVMInput], exportedOutputs: list[TransferableOutput]): # noqa
-        self.typeID = typeID
+        # typeID for an ExportTx is 1
+        self.typeID = num_to_int(1)
         self.networkID = networkID
         self.blockchainID = blockchainID
         self.destinationChain = destinationChain
