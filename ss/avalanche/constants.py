@@ -25,6 +25,18 @@ AVAXGWEI = NANOAVAX
 AVAXSTAKECAP = ONEAVAX * 3000000
 
 
+NetworkIDToHRP = {
+  0: "custom",
+  1: "avax",
+  2: "cascade",
+  3: "denali",
+  4: "everest",
+  5: "fuji",
+  1337: "custom",
+  12345: "local"
+}
+
+
 # Start Fuji
 avaxAssetID = "U8iRqJoiJm8xZHAacmvYyZVwqQx6uDNtQeP3CQ6fcgQk3JqnK"
 n5X = {
@@ -74,3 +86,17 @@ n5C = {
   'chainID': 43113
 }
 # End Fuji
+
+defaults = {
+  'networks': {
+    5: {
+      'hrp': NetworkIDToHRP[5],
+      'X': n5X,
+      "2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm": n5X,
+      'P': n5P,
+      "11111111111111111111111111111111LpoYY": n5P,
+      'C': n5C,
+      "yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp": n5C
+    },
+  }
+}
