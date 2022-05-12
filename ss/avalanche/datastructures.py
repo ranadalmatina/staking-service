@@ -16,11 +16,11 @@ class EVMOutput:
         assert len(self.amount) == 8
         assert len(self.asset_id) == 32
 
-    def to_bytes(self, hex=False):
-        serialized = self.address + self.amount + self.asset_id
-        if hex:
-            return HexBytes(serialized).hex()
-        return serialized
+    def to_bytes(self):
+        return self.address + self.amount + self.asset_id
+
+    def to_hex(self):
+        return HexBytes(self.to_bytes()).hex()
 
 
 class EVMInput(EVMOutput):
@@ -29,11 +29,11 @@ class EVMInput(EVMOutput):
         self.nonce = nonce
         assert len(self.nonce) == 8
 
-    def to_bytes(self, hex=False):
-        serialized = self.address + self.amount + self.asset_id + self.nonce
-        if hex:
-            return HexBytes(serialized).hex()
-        return serialized
+    def to_bytes(self):
+        return self.address + self.amount + self.asset_id + self.nonce
+
+    def to_hex(self):
+        return HexBytes(self.to_bytes()).hex()
 
 
 class SECPTransferOutput:
@@ -50,15 +50,15 @@ class SECPTransferOutput:
         for address in addresses:
             assert len(address) == 20
 
-    def address_bytes(self):
+    def _address_bytes(self):
         num_addresses = num_to_int(len(self.addresses))
         return num_addresses + b''.join(self.addresses)
 
-    def to_bytes(self, hex=False):
-        serialized = self.type_id + self.amount + self.locktime + self.threshold + self.address_bytes()
-        if hex:
-            return HexBytes(serialized).hex()
-        return serialized
+    def to_bytes(self):
+        return self.type_id + self.amount + self.locktime + self.threshold + self._address_bytes()
+
+    def to_hex(self):
+        return HexBytes(self.to_bytes()).hex()
 
 
 class TransferableOutput:
@@ -67,11 +67,11 @@ class TransferableOutput:
         self.output = output
         assert len(self.asset_id) == 32
 
-    def to_bytes(self, hex=False):
-        serialized = self.asset_id + self.output.to_bytes()
-        if hex:
-            return HexBytes(serialized).hex()
-        return serialized
+    def to_bytes(self):
+        return self.asset_id + self.output.to_bytes()
+
+    def to_hex(self):
+        return HexBytes(self.to_bytes()).hex()
 
 
 class EVMExportTx:
@@ -89,18 +89,19 @@ class EVMExportTx:
         assert len(self.blockchainID) == 32
         assert len(self.destinationChain) == 32
 
-    def inputs_bytes(self):
+    def _inputs_bytes(self):
         input_byte_list = [input.to_bytes() for input in self.inputs]
         num_inputs = num_to_int(len(self.inputs))
         return num_inputs + b''.join(input_byte_list)
 
-    def outputs_bytes(self):
+    def _outputs_bytes(self):
         output_byte_list = [output.to_bytes() for output in self.exportedOutputs]
         num_outputs = num_to_int(len(self.exportedOutputs))
         return num_outputs + b''.join(output_byte_list)
 
-    def to_bytes(self, hex=False):
-        serialized = self.typeID + self.networkID + self.blockchainID + self.destinationChain + self.inputs_bytes() + self.outputs_bytes()
-        if hex:
-            return HexBytes(serialized).hex()
-        return serialized
+    def to_bytes(self):
+        return (self.typeID + self.networkID + self.blockchainID + self.destinationChain +
+               self._inputs_bytes() + self._outputs_bytes())
+
+    def to_hex(self):
+        return HexBytes(self.to_bytes()).hex()
