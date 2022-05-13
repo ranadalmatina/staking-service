@@ -87,7 +87,7 @@ n5C = {
 }
 # End Fuji
 
-defaults = {
+DEFAULTS = {
   'networks': {
     5: {
       'hrp': NetworkIDToHRP[5],
