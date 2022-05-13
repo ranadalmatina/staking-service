@@ -1,5 +1,8 @@
-def num_to_int(num: int) -> bytes:
+def num_to_uint16(num: int) -> bytes:
+    return int.to_bytes(num, 2, byteorder='big', signed=False)
+
+def num_to_uint32(num: int) -> bytes:
     return int.to_bytes(num, 4, byteorder='big', signed=False)
 
-def num_to_long(num: int) -> bytes:
+def num_to_uint64(num: int) -> bytes:
     return int.to_bytes(num, 8, byteorder='big', signed=False)

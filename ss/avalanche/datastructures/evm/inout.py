@@ -4,7 +4,7 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
-from avalanche.tools import num_to_int
+from avalanche.tools import num_to_uint32
 from ..base import DataStructure
 
 
@@ -46,7 +46,7 @@ class SECPTransferOutput(DataStructure):
     """
 
     def __init__(self, amount: bytes, locktime: bytes, threshold: bytes, addresses: list[bytes]):
-        self.type_id = num_to_int(0x00000007)
+        self.type_id = num_to_uint32(0x00000007)
         self.amount = amount
         self.locktime = locktime
         self.threshold = threshold
@@ -59,7 +59,7 @@ class SECPTransferOutput(DataStructure):
             assert len(address) == 20
 
     def _address_bytes(self):
-        num_addresses = num_to_int(len(self.addresses))
+        num_addresses = num_to_uint32(len(self.addresses))
         return num_addresses + b''.join(self.addresses)
 
     def to_bytes(self):
@@ -86,7 +86,7 @@ class SECPTransferInput(DataStructure):
     """
 
     def __init__(self, amount: bytes, address_indices: list[bytes]):
-        self.type_id = num_to_int(0x00000005)
+        self.type_id = num_to_uint32(0x00000005)
         self.amount = amount
         self.address_indices = address_indices
         assert len(self.type_id) == 4
@@ -95,7 +95,7 @@ class SECPTransferInput(DataStructure):
             assert len(address_index) == 4
 
     def _address_indices_bytes(self):
-        num_indices = num_to_int(len(self.address_indices))
+        num_indices = num_to_uint32(len(self.address_indices))
         return num_indices + b''.join(self.address_indices)
 
     def to_bytes(self):
