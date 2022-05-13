@@ -5,7 +5,7 @@ https://docs.avax.network/specs/coreth-atomic-transaction-serialization#credenti
 """
 
 from ..base import DataStructure
-from ss.avalanche.tools import num_to_int
+from avalanche.tools import num_to_int
 
 
 class SECP256K1Credential(DataStructure):

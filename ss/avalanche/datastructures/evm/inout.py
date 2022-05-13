@@ -4,7 +4,7 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
-from ss.avalanche.tools import num_to_int
+from avalanche.tools import num_to_int
 from ..base import DataStructure
 
 
@@ -78,3 +78,44 @@ class TransferableOutput(DataStructure):
 
     def to_bytes(self):
         return self.asset_id + self.output.to_bytes()
+
+
+class SECPTransferInput(DataStructure):
+    """
+    A secp256k1 transfer input allows for spending an unspent secp256k1 transfer output.
+    """
+
+    def __init__(self, amount: bytes, address_indices: list[bytes]):
+        self.type_id = num_to_int(0x00000005)
+        self.amount = amount
+        self.address_indices = address_indices
+        assert len(self.type_id) == 4
+        assert len(self.amount) == 8
+        for address_index in self.address_indices:
+            assert len(address_index) == 4
+
+    def _address_indices_bytes(self):
+        num_indices = num_to_int(len(self.address_indices))
+        return num_indices + b''.join(self.address_indices)
+
+    def to_bytes(self):
+        return self.type_id + self.amount + self._address_indices_bytes()
+
+
+class TransferableInput(DataStructure):
+    """
+    Transferable Input wraps a SECP256K1TransferInput.
+    Transferable inputs describe a specific UTXO with a provided transfer input.
+    """
+
+    def __init__(self, tx_id: bytes, utxo_index: bytes, asset_id: bytes, input: SECPTransferInput):
+        self.tx_id = tx_id
+        self.utxo_index = utxo_index
+        self.asset_id = asset_id
+        self.input = input
+        assert len(self.tx_id) == 32
+        assert len(self.utxo_index) == 4
+        assert len(self.asset_id) == 32
+
+    def to_bytes(self):
+        return self.asset_id + self.utxo_index + self.asset_id + self.input.to_bytes()

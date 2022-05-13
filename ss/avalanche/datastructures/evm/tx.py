@@ -5,28 +5,28 @@ https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
 from ..base import DataStructure
-from ss.avalanche.tools import num_to_int
+from avalanche.tools import num_to_int
 from .credential import Credential
-
+from .inout import EVMInput, EVMOutput, TransferableInput, TransferableOutput
 
 class EVMExportTx(DataStructure):
     """
     Unsigned EVM Export transaction.
     """
 
-    def __init__(self, networkID: bytes, blockchainID: bytes, destinationChain: bytes,  # noqa
-                 inputs: list[EVMInput], exportedOutputs: list[TransferableOutput]):  # noqa
+    def __init__(self, network_id: bytes, blockchain_id: bytes, destination_chain: bytes,
+                 inputs: list[EVMInput], exported_outs: list[TransferableOutput]):
         # typeID for an ExportTx is 1
         self.typeID = num_to_int(1)
-        self.networkID = networkID
-        self.blockchainID = blockchainID
-        self.destinationChain = destinationChain
+        self.network_id = network_id
+        self.blockchain_id = blockchain_id
+        self.destination_chain = destination_chain
         self.inputs = inputs
-        self.exportedOutputs = exportedOutputs
+        self.exported_outs = exported_outs
         assert len(self.typeID) == 4
-        assert len(self.networkID) == 4
-        assert len(self.blockchainID) == 32
-        assert len(self.destinationChain) == 32
+        assert len(self.network_id) == 4
+        assert len(self.blockchain_id) == 32
+        assert len(self.destination_chain) == 32
 
     def _inputs_bytes(self) -> bytes:
         input_byte_list = [input.to_bytes() for input in self.inputs]
@@ -34,12 +34,12 @@ class EVMExportTx(DataStructure):
         return num_inputs + b''.join(input_byte_list)
 
     def _outputs_bytes(self) -> bytes:
-        output_byte_list = [output.to_bytes() for output in self.exportedOutputs]
-        num_outputs = num_to_int(len(self.exportedOutputs))
+        output_byte_list = [output.to_bytes() for output in self.exported_outs]
+        num_outputs = num_to_int(len(self.exported_outs))
         return num_outputs + b''.join(output_byte_list)
 
     def to_bytes(self) -> bytes:
-        return (self.typeID + self.networkID + self.blockchainID + self.destinationChain +
+        return (self.typeID + self.network_id + self.blockchain_id + self.destination_chain +
                self._inputs_bytes() + self._outputs_bytes())
 
 
@@ -48,23 +48,23 @@ class EVMImportTx(DataStructure):
     Unsigned EVM Import transaction.
     """
 
-    def __init__(self, networkID: bytes, blockchainID: bytes, sourceChain: bytes,  # noqa
-                 importedInputs: list[TransferableInput], outs: list[EVMOutput]):  # noqa
+    def __init__(self, network_id: bytes, blockchain_id: bytes, source_chain: bytes,
+                 imported_inputs: list[TransferableInput], outs: list[EVMOutput]):
         # typeID for an ImportTx is 0
         self.typeID = num_to_int(0)
-        self.networkID = networkID
-        self.blockchainID = blockchainID
-        self.sourceChain = sourceChain
-        self.importedInputs = importedInputs
+        self.network_id = network_id
+        self.blockchain_id = blockchain_id
+        self.source_chain = source_chain
+        self.imported_inputs = imported_inputs
         self.outs = outs
         assert len(self.typeID) == 4
-        assert len(self.networkID) == 4
-        assert len(self.blockchainID) == 32
-        assert len(self.sourceChain) == 32
+        assert len(self.network_id) == 4
+        assert len(self.blockchain_id) == 32
+        assert len(self.source_chain) == 32
 
     def _inputs_bytes(self) -> bytes:
-        input_byte_list = [input.to_bytes() for input in self.importedInputs]
-        num_inputs = num_to_int(len(self.importedInputs))
+        input_byte_list = [input.to_bytes() for input in self.imported_inputs]
+        num_inputs = num_to_int(len(self.imported_inputs))
         return num_inputs + b''.join(input_byte_list)
 
     def _outputs_bytes(self) -> bytes:
@@ -73,7 +73,7 @@ class EVMImportTx(DataStructure):
         return num_outputs + b''.join(output_byte_list)
 
     def to_bytes(self) -> bytes:
-        return (self.typeID + self.networkID + self.blockchainID + self.sourceChain +
+        return (self.typeID + self.network_id + self.blockchain_id + self.source_chain +
                self._inputs_bytes() + self._outputs_bytes())
 
 
