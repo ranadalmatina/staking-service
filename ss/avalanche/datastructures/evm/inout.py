@@ -4,10 +4,15 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
-from hexbytes import HexBytes
-from .tools import num_to_int
+from ss.avalanche.tools import num_to_int
+from ..base import DataStructure
 
-class EVMOutput:
+
+class EVMOutput(DataStructure):
+    """
+    Output type specifying a state change to be applied to an EVM account as part of an ImportTx.
+    """
+
     def __init__(self, address: bytes, amount: bytes, asset_id: bytes):
         self.address = address
         self.amount = amount
@@ -19,11 +24,12 @@ class EVMOutput:
     def to_bytes(self):
         return self.address + self.amount + self.asset_id
 
-    def to_hex(self):
-        return HexBytes(self.to_bytes()).hex()
-
 
 class EVMInput(EVMOutput):
+    """
+    Input type that specifies an EVM account to deduct the funds from as part of an ExportTx.
+    """
+
     def __init__(self, address: bytes, amount: bytes, asset_id: bytes, nonce: bytes):
         super().__init__(address, amount, asset_id)
         self.nonce = nonce
@@ -32,11 +38,13 @@ class EVMInput(EVMOutput):
     def to_bytes(self):
         return self.address + self.amount + self.asset_id + self.nonce
 
-    def to_hex(self):
-        return HexBytes(self.to_bytes()).hex()
 
+class SECPTransferOutput(DataStructure):
+    """
+    A secp256k1 transfer output allows for sending a quantity of an asset
+    to a collection of addresses after a specified unix time.
+    """
 
-class SECPTransferOutput:
     def __init__(self, amount: bytes, locktime: bytes, threshold: bytes, addresses: list[bytes]):
         self.type_id = num_to_int(0x00000007)
         self.amount = amount
@@ -47,7 +55,7 @@ class SECPTransferOutput:
         assert len(self.amount) == 8
         assert len(self.locktime) == 8
         assert len(self.threshold) == 4
-        for address in addresses:
+        for address in self.addresses:
             assert len(address) == 20
 
     def _address_bytes(self):
@@ -57,11 +65,12 @@ class SECPTransferOutput:
     def to_bytes(self):
         return self.type_id + self.amount + self.locktime + self.threshold + self._address_bytes()
 
-    def to_hex(self):
-        return HexBytes(self.to_bytes()).hex()
 
+class TransferableOutput(DataStructure):
+    """
+    Transferable outputs wrap a SECP256K1TransferOutput with an asset ID.
+    """
 
-class TransferableOutput:
     def __init__(self, asset_id: bytes, output: SECPTransferOutput):
         self.asset_id = asset_id
         self.output = output
@@ -69,39 +78,3 @@ class TransferableOutput:
 
     def to_bytes(self):
         return self.asset_id + self.output.to_bytes()
-
-    def to_hex(self):
-        return HexBytes(self.to_bytes()).hex()
-
-
-class EVMExportTx:
-    def __init__(self, networkID: bytes, blockchainID: bytes, destinationChain: bytes,  # noqa
-                 inputs: list[EVMInput], exportedOutputs: list[TransferableOutput]):  # noqa
-        # typeID for an ExportTx is 1
-        self.typeID = num_to_int(1)
-        self.networkID = networkID
-        self.blockchainID = blockchainID
-        self.destinationChain = destinationChain
-        self.inputs = inputs
-        self.exportedOutputs = exportedOutputs
-        assert len(self.typeID) == 4
-        assert len(self.networkID) == 4
-        assert len(self.blockchainID) == 32
-        assert len(self.destinationChain) == 32
-
-    def _inputs_bytes(self):
-        input_byte_list = [input.to_bytes() for input in self.inputs]
-        num_inputs = num_to_int(len(self.inputs))
-        return num_inputs + b''.join(input_byte_list)
-
-    def _outputs_bytes(self):
-        output_byte_list = [output.to_bytes() for output in self.exportedOutputs]
-        num_outputs = num_to_int(len(self.exportedOutputs))
-        return num_outputs + b''.join(output_byte_list)
-
-    def to_bytes(self):
-        return (self.typeID + self.networkID + self.blockchainID + self.destinationChain +
-               self._inputs_bytes() + self._outputs_bytes())
-
-    def to_hex(self):
-        return HexBytes(self.to_bytes()).hex()
