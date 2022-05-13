@@ -9,6 +9,10 @@ from ss.avalanche.tools import num_to_int
 
 
 class SECP256K1Credential(DataStructure):
+    """
+    A secp256k1 credential contains a list of 65-byte recoverable signatures.
+    """
+
     def __init__(self, signatures: list[bytes]):
         self.type_id = num_to_int(0x00000009)
         self.signatures = signatures
