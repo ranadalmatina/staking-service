@@ -4,9 +4,10 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
+from typing import Union
 import hashlib
 from ..base import DataStructure
-from avalanche.tools import num_to_uint16, num_to_uint32
+from avalanche.tools import num_to_uint16, num_to_uint32, uint_to_num
 from .credential import Credential
 from .inout import EVMInput, EVMOutput, TransferableInput, TransferableOutput
 
@@ -14,17 +15,18 @@ class EVMExportTx(DataStructure):
     """
     Unsigned EVM Export transaction.
     """
+    TYPE_ID = num_to_uint32(1)
 
     def __init__(self, network_id: bytes, blockchain_id: bytes, destination_chain: bytes,
                  inputs: list[EVMInput], exported_outs: list[TransferableOutput]):
         # typeID for an ExportTx is 1
-        self.typeID = num_to_uint32(1)
+        self.type_id = self.TYPE_ID
         self.network_id = network_id
         self.blockchain_id = blockchain_id
         self.destination_chain = destination_chain
         self.inputs = inputs
         self.exported_outs = exported_outs
-        assert len(self.typeID) == 4
+        assert len(self.type_id) == 4
         assert len(self.network_id) == 4
         assert len(self.blockchain_id) == 32
         assert len(self.destination_chain) == 32
@@ -40,7 +42,40 @@ class EVMExportTx(DataStructure):
         return num_outputs + b''.join(output_byte_list)
 
     def to_bytes(self) -> bytes:
-        return self.typeID + self.network_id + self.blockchain_id + self.destination_chain + self._inputs_bytes() + self._outputs_bytes()
+        return self.type_id + self.network_id + self.blockchain_id + self.destination_chain + self._inputs_bytes() + self._outputs_bytes()
+
+    def __len__(self):
+        return 80 + len(self.inputs) + len(self.exported_outs)
+
+    @classmethod
+    def _inputs_from_bytes(cls, raw: bytes):
+        num_inputs = uint_to_num(raw[72:76])
+        start_offset = 76
+        end_offset = start_offset + 68  #EVMInput always 68 bytes long
+        inputs = []
+        # For now we know there is only one input, later remove this check
+        assert num_inputs == 1
+        for i in range(num_inputs):
+            inputs.append(EVMInput.from_bytes(raw[start_offset:end_offset]))
+            start_offset = end_offset
+            end_offset += 68
+        return inputs
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        type_id = raw[0:4]
+        assert type_id == cls.TYPE_ID
+        network_id = raw[4:8]
+        blockchain_id = raw[8:40]
+        destination_chain = raw[40:72]
+        inputs = cls._inputs_from_bytes(raw)
+        # Generate outputs
+        output_offset = 76 + 68 * len(inputs)
+        num_outputs = uint_to_num(raw[output_offset:output_offset+4])
+        assert num_outputs == 1
+        exported_outs = TransferableOutput.from_bytes(raw[output_offset+4:])
+        return cls(network_id, blockchain_id, destination_chain, inputs, exported_outs)
+
 
 
 class EVMImportTx(DataStructure):
@@ -51,13 +86,13 @@ class EVMImportTx(DataStructure):
     def __init__(self, network_id: bytes, blockchain_id: bytes, source_chain: bytes,
                  imported_inputs: list[TransferableInput], outs: list[EVMOutput]):
         # typeID for an ImportTx is 0
-        self.typeID = num_to_uint32(0)
+        self.type_id = num_to_uint32(0)
         self.network_id = network_id
         self.blockchain_id = blockchain_id
         self.source_chain = source_chain
         self.imported_inputs = imported_inputs
         self.outs = outs
-        assert len(self.typeID) == 4
+        assert len(self.type_id) == 4
         assert len(self.network_id) == 4
         assert len(self.blockchain_id) == 32
         assert len(self.source_chain) == 32
@@ -73,11 +108,12 @@ class EVMImportTx(DataStructure):
         return num_outputs + b''.join(output_byte_list)
 
     def to_bytes(self) -> bytes:
-        return (self.typeID + self.network_id + self.blockchain_id + self.source_chain +
+        return (self.type_id + self.network_id + self.blockchain_id + self.source_chain +
                self._inputs_bytes() + self._outputs_bytes())
 
 
-AtomicTx = EVMExportTx | EVMImportTx
+# TODO upgrade to Python 3.10
+AtomicTx = Union[EVMExportTx, EVMImportTx]
 
 
 class UnsignedTransaction(DataStructure):
@@ -97,6 +133,14 @@ class UnsignedTransaction(DataStructure):
         m = hashlib.sha256()
         m.update(self.to_bytes())
         return m.digest()
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        codec_id = uint_to_num(raw[0:2])
+        assert codec_id == 0
+        atomic_tx = EVMExportTx.from_bytes(raw[2:])
+        return cls(atomic_tx)
+
 
 
 class SignedTransaction(DataStructure):

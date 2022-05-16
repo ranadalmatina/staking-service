@@ -4,7 +4,7 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
-from avalanche.tools import num_to_uint32
+from avalanche.tools import num_to_uint32, uint_to_num
 from ..base import DataStructure
 
 
@@ -24,6 +24,17 @@ class EVMOutput(DataStructure):
     def to_bytes(self):
         return self.address + self.amount + self.asset_id
 
+    def __len__(self):
+        return 60
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        assert len(raw) == 60
+        address = raw[0:20]
+        amount = raw[20:28]
+        asset_id = raw[28:60]
+        return cls(address, amount, asset_id)
+
 
 class EVMInput(EVMOutput):
     """
@@ -38,15 +49,28 @@ class EVMInput(EVMOutput):
     def to_bytes(self):
         return self.address + self.amount + self.asset_id + self.nonce
 
+    def __len__(self):
+        return 68
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        assert len(raw) == 68
+        address = raw[0:20]
+        amount = raw[20:28]
+        asset_id = raw[28:60]
+        nonce = raw[60:68]
+        return cls(address, amount, asset_id, nonce)
+
 
 class SECPTransferOutput(DataStructure):
     """
     A secp256k1 transfer output allows for sending a quantity of an asset
     to a collection of addresses after a specified unix time.
     """
+    TYPE_ID = num_to_uint32(0x00000007)
 
     def __init__(self, amount: bytes, locktime: bytes, threshold: bytes, addresses: list[bytes]):
-        self.type_id = num_to_uint32(0x00000007)
+        self.type_id = self.TYPE_ID
         self.amount = amount
         self.locktime = locktime
         self.threshold = threshold
@@ -65,6 +89,21 @@ class SECPTransferOutput(DataStructure):
     def to_bytes(self):
         return self.type_id + self.amount + self.locktime + self.threshold + self._address_bytes()
 
+    def __len__(self):
+        return 28 + 20 * len(self.addresses)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        type_id = raw[0:4]
+        assert type_id == cls.TYPE_ID
+        amount = raw[4:12]
+        locktime = raw[12:20]
+        threshold = raw[20:24]
+        num_addresses = uint_to_num(raw[24:28])
+        assert num_addresses == 1
+        addresses = [raw[28:48]]
+        return cls(amount, locktime, threshold, addresses)
+
 
 class TransferableOutput(DataStructure):
     """
@@ -78,6 +117,15 @@ class TransferableOutput(DataStructure):
 
     def to_bytes(self):
         return self.asset_id + self.output.to_bytes()
+
+    def __len__(self):
+        return 32 + len(self.output)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        asset_id = raw[0:32]
+        output = SECPTransferOutput.from_bytes(raw[32:])
+        return cls(asset_id, output)
 
 
 class SECPTransferInput(DataStructure):
@@ -101,6 +149,9 @@ class SECPTransferInput(DataStructure):
     def to_bytes(self):
         return self.type_id + self.amount + self._address_indices_bytes()
 
+    def __len__(self):
+        return 16 + 4 * len(self.address_indices)
+
 
 class TransferableInput(DataStructure):
     """
@@ -119,3 +170,6 @@ class TransferableInput(DataStructure):
 
     def to_bytes(self):
         return self.asset_id + self.utxo_index + self.asset_id + self.input.to_bytes()
+
+    def __len__(self):
+        return 68 + len(self.input)
