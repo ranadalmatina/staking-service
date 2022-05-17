@@ -27,3 +27,16 @@ class DataStructure(ABC):
         :return:
         """
         return HexBytes(self.to_bytes()).hex()
+
+    @abstractmethod
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of this object where all values
+        are in a human-readable form. This method is used with the __str__
+        method to show nested Datastructures in an easy to understand manner.
+        :return:
+        """
+        raise NotImplementedError
+
+    def __str__(self):
+        return str(self.to_dict())

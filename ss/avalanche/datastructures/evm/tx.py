@@ -4,6 +4,7 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
+from hexbytes import HexBytes
 from typing import Union
 import hashlib
 from ..base import DataStructure
@@ -42,7 +43,8 @@ class EVMExportTx(DataStructure):
         return num_outputs + b''.join(output_byte_list)
 
     def to_bytes(self) -> bytes:
-        return self.type_id + self.network_id + self.blockchain_id + self.destination_chain + self._inputs_bytes() + self._outputs_bytes()
+        return (self.type_id + self.network_id + self.blockchain_id + self.destination_chain + self._inputs_bytes() +
+                self._outputs_bytes())
 
     def __len__(self):
         return 80 + len(self.inputs) + len(self.exported_outs)
@@ -73,8 +75,17 @@ class EVMExportTx(DataStructure):
         output_offset = 76 + 68 * len(inputs)
         num_outputs = uint_to_num(raw[output_offset:output_offset+4])
         assert num_outputs == 1
-        exported_outs = TransferableOutput.from_bytes(raw[output_offset+4:])
+        exported_outs = [TransferableOutput.from_bytes(raw[output_offset+4:])]
         return cls(network_id, blockchain_id, destination_chain, inputs, exported_outs)
+
+    def to_dict(self) -> dict:
+        return {
+            'network_id': uint_to_num(self.network_id),
+            'blockchain_id': HexBytes(self.blockchain_id).hex(),
+            'destination_chain': HexBytes(self.destination_chain).hex(),
+            'inputs': [input.to_dict() for input in self.inputs],
+            'exported_outs': [output.to_dict() for output in self.exported_outs],
+        }
 
 
 
@@ -82,11 +93,12 @@ class EVMImportTx(DataStructure):
     """
     Unsigned EVM Import transaction.
     """
+    TYPE_ID = num_to_uint32(0)
 
     def __init__(self, network_id: bytes, blockchain_id: bytes, source_chain: bytes,
                  imported_inputs: list[TransferableInput], outs: list[EVMOutput]):
         # typeID for an ImportTx is 0
-        self.type_id = num_to_uint32(0)
+        self.type_id = self.TYPE_ID
         self.network_id = network_id
         self.blockchain_id = blockchain_id
         self.source_chain = source_chain
@@ -110,6 +122,15 @@ class EVMImportTx(DataStructure):
     def to_bytes(self) -> bytes:
         return (self.type_id + self.network_id + self.blockchain_id + self.source_chain +
                self._inputs_bytes() + self._outputs_bytes())
+
+    def to_dict(self) -> dict:
+        return {
+            'network_id': uint_to_num(self.network_id),
+            'blockchain_id': HexBytes(self.blockchain_id).hex(),
+            'source_chain': HexBytes(self.source_chain).hex(),
+            'imported_inputs': [input.to_dict() for input in self.imported_inputs],
+            'outs': [output.to_dict() for output in self.outs],
+        }
 
 
 # TODO upgrade to Python 3.10
@@ -141,15 +162,20 @@ class UnsignedTransaction(DataStructure):
         atomic_tx = EVMExportTx.from_bytes(raw[2:])
         return cls(atomic_tx)
 
+    def to_dict(self) -> dict:
+        return {
+            'atomic_tx': self.atomic_tx.to_dict(),
+        }
 
 
 class SignedTransaction(DataStructure):
     """
     Contains an unsigned AtomicTX and credentials.
     """
+    CODEC_ID = num_to_uint16(0)
 
     def __init__(self, atomic_tx: AtomicTx, credentials: list[Credential]):
-        self.codec_id = num_to_uint16(0)
+        self.codec_id = self.CODEC_ID
         self.atomic_tx = atomic_tx
         self.credentials = credentials
         assert len(self.codec_id) == 2
@@ -161,3 +187,9 @@ class SignedTransaction(DataStructure):
 
     def to_bytes(self) -> bytes:
         return self.codec_id + self.atomic_tx.to_bytes() + self._credentials_bytes()
+
+    def to_dict(self) -> dict:
+        return {
+            'atomic_tx': self.atomic_tx.to_dict(),
+            'credentials': [cred.to_dict() for cred in self.credentials]
+        }
