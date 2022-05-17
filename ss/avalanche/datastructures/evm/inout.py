@@ -4,6 +4,7 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
+from hexbytes import HexBytes
 from avalanche.tools import num_to_uint32, uint_to_num
 from ..base import DataStructure
 
@@ -35,6 +36,13 @@ class EVMOutput(DataStructure):
         asset_id = raw[28:60]
         return cls(address, amount, asset_id)
 
+    def to_dict(self) -> dict:
+        return {
+            'address': HexBytes(self.address).hex(),
+            'amount': uint_to_num(self.amount),
+            'asset_id': HexBytes(self.asset_id).hex(),
+        }
+
 
 class EVMInput(EVMOutput):
     """
@@ -60,6 +68,14 @@ class EVMInput(EVMOutput):
         asset_id = raw[28:60]
         nonce = raw[60:68]
         return cls(address, amount, asset_id, nonce)
+
+    def to_dict(self) -> dict:
+        return {
+            'address': HexBytes(self.address).hex(),
+            'amount': uint_to_num(self.amount),
+            'asset_id': HexBytes(self.asset_id).hex(),
+            'nonce': uint_to_num(self.nonce),
+        }
 
 
 class SECPTransferOutput(DataStructure):
@@ -104,6 +120,15 @@ class SECPTransferOutput(DataStructure):
         addresses = [raw[28:48]]
         return cls(amount, locktime, threshold, addresses)
 
+    def to_dict(self) -> dict:
+        addresses_hex = [HexBytes(address).hex() for address in self.addresses]
+        return {
+            'amount': uint_to_num(self.amount),
+            'locktime': uint_to_num(self.locktime),
+            'threshold': uint_to_num(self.threshold),
+            'addresses': addresses_hex,
+        }
+
 
 class TransferableOutput(DataStructure):
     """
@@ -127,14 +152,21 @@ class TransferableOutput(DataStructure):
         output = SECPTransferOutput.from_bytes(raw[32:])
         return cls(asset_id, output)
 
+    def to_dict(self) -> dict:
+        return {
+            'asset_id': HexBytes(self.asset_id).hex(),
+            'output': self.output.to_dict()
+        }
+
 
 class SECPTransferInput(DataStructure):
     """
     A secp256k1 transfer input allows for spending an unspent secp256k1 transfer output.
     """
+    TYPE_ID = num_to_uint32(0x00000005)
 
     def __init__(self, amount: bytes, address_indices: list[bytes]):
-        self.type_id = num_to_uint32(0x00000005)
+        self.type_id = self.TYPE_ID
         self.amount = amount
         self.address_indices = address_indices
         assert len(self.type_id) == 4
@@ -151,6 +183,12 @@ class SECPTransferInput(DataStructure):
 
     def __len__(self):
         return 16 + 4 * len(self.address_indices)
+
+    def to_dict(self) -> dict:
+        return {
+            'amount': uint_to_num(self.amount),
+            'address_indices': [uint_to_num(addr_indx) for addr_indx in self.address_indices]
+        }
 
 
 class TransferableInput(DataStructure):
@@ -173,3 +211,11 @@ class TransferableInput(DataStructure):
 
     def __len__(self):
         return 68 + len(self.input)
+
+    def to_dict(self) -> dict:
+        return {
+            'tx_id': HexBytes(self.tx_id).hex(),
+            'utxo_index': uint_to_num(self.utxo_index),
+            'asset_id': HexBytes(self.asset_id).hex(),
+            'input': self.input.to_dict(),
+        }
