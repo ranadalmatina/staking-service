@@ -5,6 +5,7 @@ https://docs.avax.network/specs/coreth-atomic-transaction-serialization#credenti
 """
 
 from ..base import DataStructure
+from hexbytes import HexBytes
 from avalanche.tools import num_to_uint32
 
 
@@ -12,9 +13,10 @@ class SECP256K1Credential(DataStructure):
     """
     A secp256k1 credential contains a list of 65-byte recoverable signatures.
     """
+    TYPE_ID = num_to_uint32(0x00000009)
 
     def __init__(self, signatures: list[bytes]):
-        self.type_id = num_to_uint32(0x00000009)
+        self.type_id = self.TYPE_ID
         self.signatures = signatures
         assert len(self.type_id) == 4
         for signature in self.signatures:
@@ -27,5 +29,13 @@ class SECP256K1Credential(DataStructure):
 
     def to_bytes(self):
         return self.type_id + self._signatures_bytes()
+
+    def __len__(self):
+        return 8 + 65 * len(self.signatures)
+
+    def to_dict(self) -> dict:
+        return {
+            'signatures': [HexBytes(sig).hex() for sig in self.signatures]
+        }
 
 Credential = SECP256K1Credential
