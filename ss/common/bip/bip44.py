@@ -17,6 +17,8 @@ class Bip44ConfGetterConst:
         Bip44Coins.FUJI_P_CHAIN: Bip44Conf.FujiPChain,
         Bip44Coins.FUJI_X_CHAIN: Bip44Conf.FujiXChain,
         Bip44Coins.FB_C_CHAIN: Bip44Conf.FireblocksCChain,
+        Bip44Coins.FB_P_CHAIN: Bip44Conf.FireblocksPChain,
+        Bip44Coins.FB_X_CHAIN: Bip44Conf.FireblocksXChain,
 
     }
 

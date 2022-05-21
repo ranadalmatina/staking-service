@@ -52,7 +52,7 @@ class Bip44Conf:
         addr_params={},
     )
 
-    # Configuration for Avax Testnet C-Chain
+    # Configuration for Fireblocks Testnet Workspace C-Chain
     FireblocksCChain: BipCoinConf = BipCoinConf(
         coin_names=CoinsConf.FujiCChain.CoinNames(),
         coin_idx=1,
@@ -62,6 +62,30 @@ class Bip44Conf:
         wif_net_ver=None,
         bip32_cls=Bip32Secp256k1,
         addr_cls=EthAddrEncoder,
+        addr_params={},
+    )
+    # Configuration for Fireblocks Testnet Workspace P-Chain
+    FireblocksPChain: BipCoinConf = BipCoinConf(
+        coin_names=CoinsConf.FujiPChain.CoinNames(),
+        coin_idx=1,
+        is_testnet=True,
+        def_path=NOT_HARDENED_DEF_PATH,
+        key_net_ver=_BIP44_BTC_KEY_NET_VER_TEST,
+        wif_net_ver=None,
+        bip32_cls=Bip32Secp256k1,
+        addr_cls=FujiPChainAddrEncoder,
+        addr_params={},
+    )
+    # Configuration for Fireblocks Testnet Workspace X-Chain
+    FireblocksXChain: BipCoinConf = BipCoinConf(
+        coin_names=CoinsConf.FujiXChain.CoinNames(),
+        coin_idx=1,
+        is_testnet=True,
+        def_path=NOT_HARDENED_DEF_PATH,
+        key_net_ver=_BIP44_BTC_KEY_NET_VER_TEST,
+        wif_net_ver=None,
+        bip32_cls=Bip32Secp256k1,
+        addr_cls=FujiXChainAddrEncoder,
         addr_params={},
     )
 

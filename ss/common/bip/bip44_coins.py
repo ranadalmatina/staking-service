@@ -19,3 +19,5 @@ class Bip44Coins(BipCoins):
     FUJI_X_CHAIN = auto()
     # Fireblocks Testnet
     FB_C_CHAIN = auto()
+    FB_X_CHAIN = auto()
+    FB_P_CHAIN = auto()
