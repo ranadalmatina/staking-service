@@ -184,6 +184,20 @@ class SECPTransferInput(DataStructure):
     def __len__(self):
         return 16 + 4 * len(self.address_indices)
 
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        type_id = raw[0:4]
+        assert type_id == cls.TYPE_ID
+        amount = raw[4:12]
+        num_indices = uint_to_num(raw[12:16])
+        # Parse all address indices
+        address_indices = []
+        offset = 16
+        for i in range(num_indices):
+            address_indices.append(raw[offset:offset + 4])
+            offset += 4
+        return cls(amount, address_indices)
+
     def to_dict(self) -> dict:
         return {
             'amount': uint_to_num(self.amount),
@@ -207,10 +221,18 @@ class TransferableInput(DataStructure):
         assert len(self.asset_id) == 32
 
     def to_bytes(self):
-        return self.asset_id + self.utxo_index + self.asset_id + self.input.to_bytes()
+        return self.tx_id + self.utxo_index + self.asset_id + self.input.to_bytes()
 
     def __len__(self):
         return 68 + len(self.input)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        tx_id = raw[0:32]
+        utxo_index = raw[32:36]
+        asset_id = raw[36:68]
+        input = SECPTransferInput.from_bytes(raw[68:])
+        return cls(tx_id, utxo_index, asset_id, input)
 
     def to_dict(self) -> dict:
         return {
