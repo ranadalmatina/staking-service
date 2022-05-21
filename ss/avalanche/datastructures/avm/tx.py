@@ -41,14 +41,40 @@ class BaseTx(DataStructure):
         return num_outputs + b''.join(output_byte_list)
 
     def to_bytes(self) -> bytes:
-        mem_len = num_to_uint32(len(self.memo))
-        return (self.type_id + self.network_id + self.blockchain_id + self._inputs_bytes() +
-                self._outputs_bytes() + mem_len + self.memo)
+        memo_len = num_to_uint32(len(self.memo))
+        return (self.type_id + self.network_id + self.blockchain_id + self._outputs_bytes() +
+                self._inputs_bytes() + memo_len + self.memo)
 
     def __len__(self):
         size_outputs = sum([len(output) for output in self.outputs])
         size_inputs = sum([len(input) for input in self.inputs])
         return 52 + size_outputs + size_inputs + len(self.memo)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        # Ignore type_id check because it is changed by other classses
+        network_id = raw[4:8]
+        blockchain_id = raw[8:40]
+        # Generate outputs
+        outputs = []
+        num_outputs = uint_to_num(raw[40:44])
+        offset = 44
+        for i in range(num_outputs):
+            output = TransferableOutput.from_bytes(raw[offset:])
+            offset += len(output)
+            outputs.append(output)
+        # Generate inputs
+        inputs = []
+        num_inputs = uint_to_num(raw[offset:offset + 4])
+        offset += 4
+        for i in range(num_inputs):
+            input = TransferableOutput.from_bytes(raw[offset:])
+            offset += len(input)
+            inputs.append(input)
+        memo_len = uint_to_num(raw[offset:offset + 4])
+        offset += 4
+        memo = raw[offset:offset + memo_len]
+        return cls(network_id, blockchain_id, outputs, inputs, memo)
 
     def to_dict(self) -> dict:
         return {
@@ -72,6 +98,7 @@ class AVMImportTx(DataStructure):
         self.base_tx.type_id = self.TYPE_ID
         self.source_chain = source_chain
         self.ins = ins
+        assert len(self.source_chain) == 32
 
     def _ins_bytes(self) -> bytes:
         input_byte_list = [input.to_bytes() for input in self.ins]
@@ -84,6 +111,18 @@ class AVMImportTx(DataStructure):
     def __len__(self):
         size_ins = sum([len(input) for input in self.ins])
         return 36 + size_ins + len(self.base_tx)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        type_id = raw[0:4]
+        assert type_id == cls.TYPE_ID
+        base = BaseTx.from_bytes(raw)
+        offset = len(base)
+        source_chain = raw[offset:offset+32]
+        num_inputs = uint_to_num(raw[offset+32:offset+36])
+        assert num_inputs == 1
+        input = TransferableInput.from_bytes(raw[offset+36:])
+        return cls(base, source_chain, [input])
 
     def to_dict(self) -> dict:
         return {
@@ -105,6 +144,7 @@ class AVMExportTx(DataStructure):
         self.base_tx.type_id = self.TYPE_ID
         self.destination_chain = destination_chain
         self.outs = outs
+        assert len(self.destination_chain) == 32
 
     def _outs_bytes(self) -> bytes:
         output_byte_list = [output.to_bytes() for output in self.outs]
@@ -117,6 +157,18 @@ class AVMExportTx(DataStructure):
     def __len__(self):
         size_outs = sum([len(output) for output in self.outs])
         return 36 + size_outs + len(self.base_tx)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        type_id = raw[0:4]
+        assert type_id == cls.TYPE_ID
+        base = BaseTx.from_bytes(raw)
+        offset = len(base)
+        destination_chain = raw[offset:offset + 32]
+        num_outputs = uint_to_num(raw[offset + 32:offset + 36])
+        assert num_outputs == 1
+        output = TransferableOutput.from_bytes(raw[offset + 36:])
+        return cls(base, destination_chain, [output])
 
     def to_dict(self) -> dict:
         return {
