@@ -5,11 +5,8 @@ https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
 from hexbytes import HexBytes
-from typing import Union
-import hashlib
 from ..base import DataStructure
-from avalanche.tools import num_to_uint16, num_to_uint32, uint_to_num
-from .credential import Credential
+from avalanche.tools import num_to_uint32, uint_to_num
 from .inout import EVMInput, EVMOutput, TransferableInput, TransferableOutput
 
 class EVMExportTx(DataStructure):
@@ -130,66 +127,4 @@ class EVMImportTx(DataStructure):
             'source_chain': HexBytes(self.source_chain).hex(),
             'imported_inputs': [input.to_dict() for input in self.imported_inputs],
             'outs': [output.to_dict() for output in self.outs],
-        }
-
-
-# TODO upgrade to Python 3.10
-AtomicTx = Union[EVMExportTx, EVMImportTx]
-
-
-class UnsignedTransaction(DataStructure):
-    """
-    Undocumented UnsignedTransaction ported from Avalanche.js
-    """
-
-    def __init__(self, atomic_tx: AtomicTx):
-        self.codec_id = num_to_uint16(0)
-        self.atomic_tx = atomic_tx
-        assert len(self.codec_id) == 2
-
-    def to_bytes(self) -> bytes:
-        return self.codec_id + self.atomic_tx.to_bytes()
-
-    def hash(self) -> bytes:
-        m = hashlib.sha256()
-        m.update(self.to_bytes())
-        return m.digest()
-
-    @classmethod
-    def from_bytes(cls, raw: bytes):
-        codec_id = uint_to_num(raw[0:2])
-        assert codec_id == 0
-        atomic_tx = EVMExportTx.from_bytes(raw[2:])
-        return cls(atomic_tx)
-
-    def to_dict(self) -> dict:
-        return {
-            'atomic_tx': self.atomic_tx.to_dict(),
-        }
-
-
-class SignedTransaction(DataStructure):
-    """
-    Contains an unsigned AtomicTX and credentials.
-    """
-    CODEC_ID = num_to_uint16(0)
-
-    def __init__(self, atomic_tx: AtomicTx, credentials: list[Credential]):
-        self.codec_id = self.CODEC_ID
-        self.atomic_tx = atomic_tx
-        self.credentials = credentials
-        assert len(self.codec_id) == 2
-
-    def _credentials_bytes(self) -> bytes:
-        credential_byte_list = [credential.to_bytes() for credential in self.credentials]
-        num_credentials = num_to_uint32(len(self.credentials))
-        return num_credentials + b''.join(credential_byte_list)
-
-    def to_bytes(self) -> bytes:
-        return self.codec_id + self.atomic_tx.to_bytes() + self._credentials_bytes()
-
-    def to_dict(self) -> dict:
-        return {
-            'atomic_tx': self.atomic_tx.to_dict(),
-            'credentials': [cred.to_dict() for cred in self.credentials]
         }
