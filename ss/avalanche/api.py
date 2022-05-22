@@ -70,12 +70,38 @@ class AvalancheClient:
         })
         return response
 
+    def platform_get_utxos(self, addresses: list[str], source_chain: str, limit=1024, encoding="cb58"):
+        response = requests.post(self.p_chain_rpc_url, json={
+            "jsonrpc":"2.0",
+            "id"     : 1,
+            "method" :"platform.getUTXOs",
+            "params" :{
+                "addresses": addresses,
+                "sourceChain": source_chain,
+                "limit": limit,
+                "encoding": encoding,
+            }
+        })
+        return response
+
 
     def avm_issue_tx(self, tx: str, encoding="cb58"):
         response = requests.post(self.x_chain_rpc_url, json={
             "jsonrpc":"2.0",
             "id"     : 1,
             "method" :"avm.issueTx",
+            "params" :{
+                "tx": tx,
+                "encoding": encoding
+            }
+        })
+        return response
+
+    def platform_issue_tx(self, tx: str, encoding="cb58"):
+        response = requests.post(self.p_chain_rpc_url, json={
+            "jsonrpc":"2.0",
+            "id"     : 1,
+            "method" :"platform.issueTx",
             "params" :{
                 "tx": tx,
                 "encoding": encoding
