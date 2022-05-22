@@ -1,13 +1,13 @@
 from hexbytes import HexBytes
 from django.core.management.base import BaseCommand
 from avalanche.base58 import Base58Decoder, Base58Encoder
-from avalanche.tools import num_to_uint32, num_to_uint64
+from avalanche.tools import num_to_uint32, num_to_uint64, uint_to_num
 from avalanche.constants import DEFAULTS
 from avalanche.datastructures.evm import SECPTransferOutput, TransferableOutput, SECPTransferInput, TransferableInput
 from avalanche.datastructures.avm import BaseTx, AVMImportTx
 from avalanche.datastructures.evm import UTXO
 from avalanche.datastructures import UnsignedTransaction, SECP256K1Credential, SignedTransaction
-from avalanche.api import avm_get_utxos, avm_issue_tx
+from avalanche.api import AvalancheClient
 from avalanche.bech32 import bech32_to_bytes, bech32_address_from_public_key
 from common.bip.bip44_coins import Bip44Coins
 from common.bip.bip32 import fireblocks_public_key
@@ -29,7 +29,8 @@ class Command(BaseCommand):
     def get_utxos(self):
         address = self._get_x_chain_bech32()
         c_chain_blockchain_id_str: str = DEFAULTS['networks'][self.network_id]['C']['blockchainID']
-        response = avm_get_utxos(addresses=[address], source_chain=c_chain_blockchain_id_str)
+        client = AvalancheClient()
+        response = client.avm_get_utxos(addresses=[address], source_chain=c_chain_blockchain_id_str)
         print(response.json())
         return response.json()
 
@@ -47,14 +48,15 @@ class Command(BaseCommand):
             print(utxo)
 
             amount = utxo.output.amount
+            fee = 1000000
+            amt = uint_to_num(amount) - fee
             asset_id = utxo.asset_id
             locktime = num_to_uint64(0)
             threshold = num_to_uint32(1)
             x_address = self._get_x_chain_address()
 
             print('-----------Outputs ---------')
-            # TODO were missing a fee here for amount
-            sec_out = SECPTransferOutput(amount, locktime, threshold, [x_address])
+            sec_out = SECPTransferOutput(num_to_uint64(amt), locktime, threshold, [x_address])
             print(sec_out.to_hex())
             xfer_out = TransferableOutput(asset_id, sec_out)
             outputs.append(xfer_out)
@@ -108,14 +110,14 @@ class Command(BaseCommand):
         print('-----------Unsigned---------')
         print(unsigned_tx.to_hex())
         print('----------HASH----------')
-        print(HexBytes(unsigned_tx.hash()).hex())
+        print(unsigned_tx.hash().hex())
         return import_tx
 
     def get_signature(self):
         pub_key = HexBytes("028d6742ba744686f0cea20e69154eed3f0bc654485ebebae5c76b9f49ff3ccb01")
-        msg_hash = HexBytes("8eeda5cf6b6c6ac18b5760663eacf51c5acb8c0a8bbc5c3f4f0e9c47d1c61337")
+        msg_hash = HexBytes("d4711fe124f192337cee209bc3f1a0efc709bbef6007126f7957cfdb065ef4ea")
         client = get_fireblocks_client()
-        response = client.get_transaction_by_id(txid='cfd8959c-7811-4f98-ab3e-cbf594ffbcca')
+        response = client.get_transaction_by_id(txid='f5f3d75a-d262-4ad8-9025-b3efaf829546')
         sig = recoverable_signature(response['signedMessages'])
         verify_message_hash(pub=pub_key, msg_hash=msg_hash, sig=sig)
         return sig
@@ -130,7 +132,8 @@ class Command(BaseCommand):
         b58_signed_tx = Base58Encoder.CheckEncode(signed_tx.to_bytes())
         print(b58_signed_tx)
         print('-----------Transmission to Network-----------')
-        response = avm_issue_tx(tx=b58_signed_tx)
+        client = AvalancheClient()
+        response = client.avm_issue_tx(tx=b58_signed_tx)
         if response.status_code == 200:
             print(response.json())
 

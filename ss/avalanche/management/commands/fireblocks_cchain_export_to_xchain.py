@@ -41,7 +41,7 @@ class Command(BaseCommand):
         print('-----------Unsigned---------')
         print(unsigned_tx.to_hex())
         print('----------HASH----------')
-        print(HexBytes(unsigned_tx.hash()).hex())
+        print(unsigned_tx.hash().hex())
 
 
     def build_export_tx(self):
@@ -59,13 +59,6 @@ class Command(BaseCommand):
         avax_asset_id_buf = Base58Decoder.CheckDecode(avax_asset_id)
 
         x_address = self.get_to_address()
-
-        # print(HexBytes(avax_asset_id_buf).hex())
-        # print(len(avax_asset_id_buf))
-        # print(avax_asset_id_buf)
-        # print(Base58Decoder.CheckDecode(avax_asset_id))
-        # print(HexBytes(Base58Decoder.CheckDecode(avax_asset_id)).hex())
-
         c_address = HexBytes('0x37925525b620412183D4d8F71e6f64b5e64420C4')
 
         amount = 1000000000
@@ -92,9 +85,9 @@ class Command(BaseCommand):
 
     def get_signature(self):
         pub_key = HexBytes("028d6742ba744686f0cea20e69154eed3f0bc654485ebebae5c76b9f49ff3ccb01")
-        msg_hash = HexBytes("750e8bd25c28ebc0efbe511da3cc79279ba56c95d3a9b9fab3fa4190fbd2d95b")
+        msg_hash = HexBytes("4f95084168e94512dae3176e14f92b418d274bb92c549f11ffd39410f7f885f9")
         client = get_fireblocks_client()
-        response = client.get_transaction_by_id(txid='800a4feb-7843-498e-8983-30860e156f99')
+        response = client.get_transaction_by_id(txid='b1fda85c-2dcf-4f86-a730-1a7dc13aef9c')
         sig = recoverable_signature(response['signedMessages'])
         verify_message_hash(pub=pub_key, msg_hash=msg_hash, sig=sig)
         return sig
