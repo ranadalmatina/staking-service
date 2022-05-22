@@ -131,3 +131,6 @@ dmypy.json
 # Ignre PyCharm files
 .idea/
 .stfolder/
+
+fireblocks_secret.key
+rsync.sh
