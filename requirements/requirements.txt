@@ -1,3 +1,5 @@
+arrow==1.2.2
+
 # Postgres and Django
 psycopg2-binary==2.9.3
 pytz==2022.1
