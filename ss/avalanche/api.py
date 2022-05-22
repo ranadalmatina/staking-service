@@ -1,9 +1,9 @@
 import requests
 
 
-class AvalancheGo:
+class AvalancheClient:
     """
-    Avalanche Go RPC client.
+    Avalanche Go HTTP/RPC client.
     """
     AVAX_HTTP = "https://api.avax.network"
     FUJI_HTTP = "https://api.avax-test.network"
