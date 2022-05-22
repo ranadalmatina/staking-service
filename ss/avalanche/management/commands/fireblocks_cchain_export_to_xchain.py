@@ -1,14 +1,12 @@
-from decimal import Decimal
 from hexbytes import HexBytes
-from web3 import Web3
-from web3.middleware import geth_poa_middleware
 from django.core.management.base import BaseCommand
 from avalanche.base58 import Base58Decoder, Base58Encoder
 from avalanche.tools import num_to_uint32, num_to_uint64
 from avalanche.constants import DEFAULTS
-from avalanche.datastructures.evm import (EVMInput, SECPTransferOutput, TransferableOutput, EVMExportTx,
-    UnsignedTransaction, SECP256K1Credential, SignedTransaction)
-from avalanche.api import evm_issue_tx
+from avalanche.datastructures.evm import EVMInput, SECPTransferOutput, TransferableOutput, EVMExportTx
+from avalanche.datastructures import SECP256K1Credential, UnsignedTransaction, SignedTransaction
+from avalanche.api import AvalancheClient
+from avalanche.web3 import AvaWeb3
 from avalanche.bech32 import bech32_to_bytes, bech32_address_from_public_key
 from common.bip.bip44_coins import Bip44Coins
 from common.bip.bip32 import fireblocks_public_key
@@ -17,28 +15,16 @@ from fireblocks.utils.raw_signing import recoverable_signature, verify_message_h
 
 
 class Command(BaseCommand):
-    help = 'Create a transaction for Fireblocks.'
+    help = "Create an export transaction from C-Chain to X-Chain using Fireblocks."
 
     def handle(self, *args, **options):
         # self.build_transaction()
         self.send_to_network()
 
-    def setup_web3(self):
-        RPC_URL = "https://api.avax-test.network/ext/bc/C/rpc"
-        web3 = Web3(Web3.HTTPProvider(RPC_URL))
-        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-        from_address = web3.toChecksumAddress("0x37925525b620412183D4d8F71e6f64b5e64420C4")
-        amount = web3.fromWei(web3.eth.get_balance(from_address), 'ether')
-        print(amount)
-        # assert amount == Decimal('28.9994225')
-        return web3
-
     def get_nonce(self, address):
-        web3 = self.setup_web3()
-        from_address_hex = web3.toChecksumAddress(address)
-        nonce = web3.eth.getTransactionCount(from_address_hex)
-        print(f'Nonce is {nonce}')
-        return nonce
+        web3 = AvaWeb3()
+        print(web3.get_balance(address))
+        return web3.get_nonce(address)
 
     def get_to_address(self):
         # This is the only derivation path we are allowed on test workspace
@@ -86,7 +72,6 @@ class Command(BaseCommand):
         import_fee = 1000000
         amount = amount + import_fee
         export_fee = 350937
-        # nonce = self.get_nonce()
         nonce = self.get_nonce('0x37925525b620412183D4d8F71e6f64b5e64420C4')
 
         locktime = num_to_uint64(0)
@@ -124,7 +109,8 @@ class Command(BaseCommand):
         b58_signed_tx = Base58Encoder.CheckEncode(signed_tx.to_bytes())
         print(b58_signed_tx)
         print('-----------Transmission to Network-----------')
-        response = evm_issue_tx(tx=b58_signed_tx)
+        client = AvalancheClient()
+        response = client.evm_issue_tx(tx=b58_signed_tx)
         if response.status_code == 200:
             print(response.json())
 
