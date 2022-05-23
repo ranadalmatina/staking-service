@@ -52,7 +52,7 @@ class BaseTx(DataStructure):
 
     @classmethod
     def from_bytes(cls, raw: bytes):
-        # Ignore type_id check because it is changed by other classses
+        # Ignore type_id check because it is changed by "subclasses"
         network_id = raw[4:8]
         blockchain_id = raw[8:40]
         # Generate outputs

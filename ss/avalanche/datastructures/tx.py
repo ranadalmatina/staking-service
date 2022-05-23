@@ -11,6 +11,7 @@ from .types import AtomicTx
 from .base import DataStructure
 from .evm.tx import EVMExportTx, EVMImportTx
 from .avm.tx import AVMImportTx, AVMExportTx
+from .platform.tx import PlatformImportTx, PlatformExportTx
 
 
 class UnsignedTransaction(DataStructure):
@@ -22,6 +23,8 @@ class UnsignedTransaction(DataStructure):
         EVMImportTx.TYPE_ID: EVMImportTx,
         AVMImportTx.TYPE_ID: AVMImportTx,
         AVMExportTx.TYPE_ID: AVMExportTx,
+        PlatformExportTx.TYPE_ID: PlatformExportTx,
+        PlatformImportTx.TYPE_ID: PlatformImportTx,
     }
 
     def __init__(self, atomic_tx: AtomicTx):
