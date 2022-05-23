@@ -128,9 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Ignre PyCharm files
+# Ignore PyCharm files + syncthing
 .idea/
 .stfolder/
+.stignore
 
 fireblocks_secret.key
 rsync.sh
