@@ -1,3 +1,4 @@
+from decimal import Decimal
 from hexbytes import HexBytes
 from django.core.management.base import BaseCommand
 from avalanche.base58 import Base58Decoder, Base58Encoder
@@ -7,13 +8,12 @@ from avalanche.datastructures.evm import SECPTransferOutput, TransferableOutput,
 from avalanche.datastructures.avm import BaseTx
 from avalanche.datastructures.platform import PlatformImportTx
 from avalanche.datastructures.evm import UTXO
-from avalanche.datastructures import UnsignedTransaction, SECP256K1Credential, SignedTransaction
+from avalanche.datastructures import UnsignedTransaction
 from avalanche.api import AvalancheClient
+from avalanche.models import AtomicTx
 from avalanche.bech32 import bech32_to_bytes, bech32_address_from_public_key
 from common.bip.bip44_coins import Bip44Coins
 from common.bip.bip32 import fireblocks_public_key
-from fireblocks.client import get_fireblocks_client
-from fireblocks.utils.raw_signing import recoverable_signature, verify_message_hash
 
 
 class Command(BaseCommand):
@@ -24,8 +24,19 @@ class Command(BaseCommand):
         self.network_id = 5
 
     def handle(self, *args, **options):
-        # self.build_import_tx()
-        self.send_to_network()
+        pub_key = fireblocks_public_key("44/1/0/0/0")
+        from_address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_C_CHAIN)
+        to_address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
+        export_tx = self.build_import_tx()
+        unsigned_tx = UnsignedTransaction(export_tx)
+        export_tx = AtomicTx(from_derivation_path="44/1/0/0/0",
+                             from_address=from_address,
+                             to_derivation_path="44/1/0/0/0",
+                             to_address=to_address,
+                             amount=Decimal("1000000000"),
+                             description="FB P-Chain import from C-Chain",
+                             unsigned_transaction=Base58Encoder.CheckEncode(unsigned_tx.to_bytes()))
+        export_tx.save()
 
     def get_utxos(self):
         address = self._get_p_chain_bech32()
@@ -113,28 +124,3 @@ class Command(BaseCommand):
         print('----------HASH----------')
         print(unsigned_tx.hash().hex())
         return import_tx
-
-    def get_signature(self):
-        pub_key = HexBytes("028d6742ba744686f0cea20e69154eed3f0bc654485ebebae5c76b9f49ff3ccb01")
-        msg_hash = HexBytes("a9d054465f2acd1c3a6deaaa27ba66927110d483205036d606232ac2eac85280")
-        client = get_fireblocks_client()
-        response = client.get_transaction_by_id(txid='c899606c-7c50-4c3c-8947-66320cf6bc86')
-        sig = recoverable_signature(response['signedMessages'])
-        verify_message_hash(pub=pub_key, msg_hash=msg_hash, sig=sig)
-        return sig
-
-    def send_to_network(self):
-        import_tx = self.build_import_tx()
-        print('-----------Signed---------')
-        sig = self.get_signature().to_bytes()
-        cred = SECP256K1Credential([sig])
-        signed_tx = SignedTransaction(import_tx, [cred])
-        print(signed_tx.to_hex())
-        b58_signed_tx = Base58Encoder.CheckEncode(signed_tx.to_bytes())
-        print(b58_signed_tx)
-        print('-----------Transmission to Network-----------')
-        client = AvalancheClient()
-        response = client.platform_issue_tx(tx=b58_signed_tx)
-        if response.status_code == 200:
-            print(response.json())
-
