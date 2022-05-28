@@ -16,6 +16,8 @@ whitenoise==6.0.0
 
 fireblocks-sdk==1.16.0
 
+celery==5.2.6
+
 # Crypto
 web3==5.29.0
 bip-utils==2.3.0
