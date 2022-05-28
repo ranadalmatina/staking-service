@@ -2,7 +2,7 @@ import logging
 import os.path
 from decimal import Decimal
 
-from fireblocks_sdk import EXTERNAL_WALLET, UNKNOWN_PEER, VAULT_ACCOUNT
+from fireblocks_sdk import EXTERNAL_WALLET, UNKNOWN_PEER, VAULT_ACCOUNT, UnsignedMessage, RawMessage
 from fireblocks_sdk.sdk import DestinationTransferPeerPath, FireblocksApiException, FireblocksSDK, TransferPeerPath
 
 from django.conf import settings
@@ -54,6 +54,15 @@ class FireblocksClient(FireblocksSDK):
         source = TransferPeerPath(peer_type=VAULT_ACCOUNT, peer_id=source_vault_account_id)
         dest = DestinationTransferPeerPath(peer_type=VAULT_ACCOUNT, peer_id=destination_vault_account_id)
         return self.create_transaction(asset_id, amount=str(amount), source=source, destination=dest)
+
+    def vault_raw_transaction(self, vault_account_id: str, asset_id: str, message_hash: str, note: str):
+        source = TransferPeerPath(peer_type=VAULT_ACCOUNT, peer_id=vault_account_id)
+        raw_message = RawMessage(
+            messages=[
+                UnsignedMessage(content=message_hash)
+            ]
+        )
+        return self.create_raw_transaction(asset_id=asset_id, source=source, raw_message=raw_message, note=note)
 
 
 def get_fireblocks_client():
