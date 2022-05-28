@@ -2,6 +2,7 @@
 This code is directly ported from Fireblocks Javascript front end.
 It might contain bugs or need to be patched as things change.
 """
+from django.utils.html import format_html
 
 
 def _clean_tx_hash(e):
@@ -55,11 +56,16 @@ def _get_link(asset_id: str, tx_hash: str) -> str:
             'wnd': f'https://westend.subscan.io/extrinsic/{tx_hash}',
             'xem': f'http://chain.nem.ninja/#/transfer/{tx_hash}',
             'xem_test': f'http://chain.nem.ninja/#/transfer/{tx_hash}',
+            'fuji_x': f'https://explorer-xp.avax-test.network/tx/{tx_hash}',
+            'avax_x': f'https://explorer-xp.avax.network/tx/{tx_hash}',
         }
         if asset_id in link_map:
             return link_map[asset_id]
     return None
 
 
-def get_explorer_link(asset_id: str, tx_hash: str) -> str:
-    return _get_link(asset_id.lower(), tx_hash)
+def get_explorer_link(asset_id: str, tx_hash: str) -> str | None:
+    link = _get_link(asset_id.lower(), tx_hash)
+    if link is not None:
+        return format_html('<a href="{0}">{1}</a>', link, tx_hash)
+    return None
