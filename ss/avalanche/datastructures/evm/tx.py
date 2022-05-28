@@ -4,6 +4,7 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
+from avalanche.constants import CChainAlias
 from hexbytes import HexBytes
 from ..base import DataStructure
 from avalanche.tools import num_to_uint32, uint_to_num
@@ -14,6 +15,7 @@ class EVMExportTx(DataStructure):
     Unsigned EVM Export transaction.
     """
     TYPE_ID = num_to_uint32(1)
+    SOURCE_CHAIN = CChainAlias
 
     def __init__(self, network_id: bytes, blockchain_id: bytes, destination_chain: bytes,
                  inputs: list[EVMInput], exported_outs: list[TransferableOutput]):
@@ -91,6 +93,7 @@ class EVMImportTx(DataStructure):
     Unsigned EVM Import transaction.
     """
     TYPE_ID = num_to_uint32(0)
+    SOURCE_CHAIN = CChainAlias
 
     def __init__(self, network_id: bytes, blockchain_id: bytes, source_chain: bytes,
                  imported_inputs: list[TransferableInput], outs: list[EVMOutput]):

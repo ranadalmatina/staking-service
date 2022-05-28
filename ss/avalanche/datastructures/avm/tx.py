@@ -4,6 +4,7 @@ the specifications located at
 https://docs.avax.network/specs/avm-transaction-serialization
 """
 
+from avalanche.constants import XChainAlias
 from hexbytes import HexBytes
 from avalanche.tools import num_to_uint32, uint_to_num
 from ..base import DataStructure
@@ -91,6 +92,7 @@ class AVMImportTx(DataStructure):
     AVM Unsigned Import TX
     """
     TYPE_ID = num_to_uint32(3)
+    SOURCE_CHAIN = XChainAlias
 
     def __init__(self, base_tx: BaseTx, source_chain: bytes, ins: list[TransferableInput]):
         self.base_tx = base_tx
@@ -137,6 +139,7 @@ class AVMExportTx(DataStructure):
     AVM Unsigned Export TX
     """
     TYPE_ID = num_to_uint32(4)
+    SOURCE_CHAIN = XChainAlias
 
     def __init__(self, base_tx: BaseTx, destination_chain: bytes, outs: list[TransferableOutput]):
         self.base_tx = base_tx
