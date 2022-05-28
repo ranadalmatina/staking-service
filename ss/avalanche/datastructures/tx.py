@@ -49,6 +49,13 @@ class UnsignedTransaction(DataStructure):
         atomic_tx = AtomicTxClass.from_bytes(raw[2:])
         return cls(atomic_tx)
 
+    def get_tx_type(self):
+        return self.TYPE_MAP[self.atomic_tx.TYPE_ID]
+
+    def get_source_chain(self):
+        tx_type = self.get_tx_type()
+        return tx_type.SOURCE_CHAIN
+
     def to_dict(self) -> dict:
         return {
             'atomic_tx': self.atomic_tx.to_dict(),
