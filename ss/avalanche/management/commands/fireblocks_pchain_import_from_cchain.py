@@ -27,16 +27,16 @@ class Command(BaseCommand):
         pub_key = fireblocks_public_key("44/1/0/0/0")
         from_address = eth_address_from_public_key(pub_key.ToBytes())
         to_address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
-        export_tx = self.build_import_tx()
-        unsigned_tx = UnsignedTransaction(export_tx)
-        export_tx = AtomicTx(from_derivation_path="44/1/0/0/0",
+        import_tx = self.build_import_tx()
+        unsigned_tx = UnsignedTransaction(import_tx)
+        import_tx = AtomicTx(from_derivation_path="44/1/0/0/0",
                              from_address=from_address,
                              to_derivation_path="44/1/0/0/0",
                              to_address=to_address,
                              amount=Decimal("1000000000"),
                              description="FB P-Chain import from C-Chain",
                              unsigned_transaction=Base58Encoder.CheckEncode(unsigned_tx.to_bytes()))
-        export_tx.save()
+        import_tx.save()
 
     def get_utxos(self):
         address = self._get_p_chain_bech32()
