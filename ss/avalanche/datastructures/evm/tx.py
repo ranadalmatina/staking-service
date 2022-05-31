@@ -123,6 +123,34 @@ class EVMImportTx(DataStructure):
         return (self.type_id + self.network_id + self.blockchain_id + self.source_chain +
                self._inputs_bytes() + self._outputs_bytes())
 
+    def __len__(self):
+        return 80 + len(self.imported_inputs) + len(self.outs)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes):
+        type_id = raw[0:4]
+        assert type_id == cls.TYPE_ID
+        network_id = raw[4:8]
+        blockchain_id = raw[8:40]
+        source_chain = raw[40:72]
+        # Generate inputs
+        imported_inputs = []
+        num_inputs = uint_to_num(raw[72:76])
+        offset = 76
+        for i in range(num_inputs):
+            input = TransferableInput.from_bytes(raw[offset:])
+            offset += len(input)
+            imported_inputs.append(input)
+        # Generate outputs
+        outs = []
+        num_outputs = uint_to_num(raw[offset:offset + 4])
+        offset += 4
+        for i in range(num_outputs):
+            output = EVMOutput.from_bytes(raw[offset:])
+            offset += len(output)
+            outs.append(output)
+        return cls(network_id, blockchain_id, source_chain, imported_inputs, outs)
+
     def to_dict(self) -> dict:
         return {
             'network_id': uint_to_num(self.network_id),
