@@ -32,15 +32,15 @@ class _AvaxAddrUtils:
 
 class FujiPChainAddrDecoder(IAddrDecoder):
     """
-    Avax P-Chain address decoder class.
-    It allows the Avax P-Chain address decoding.
+    Fuji P-Chain address decoder class.
+    It allows the Fuji P-Chain address decoding.
     """
 
     @staticmethod
     def DecodeAddr(addr: str,
                    **kwargs: Any) -> bytes:
         """
-        Decode an Avax P-Chain address to bytes.
+        Decode a Fuji P-Chain address to bytes.
         Args:
             addr (str): Address string
             **kwargs  : Not used
@@ -56,15 +56,15 @@ class FujiPChainAddrDecoder(IAddrDecoder):
 
 class FujiPChainAddrEncoder(IAddrEncoder):
     """
-    Avax P-Chain address encoder class.
-    It allows the Avax P-Chain address encoding.
+    Fuji P-Chain address encoder class.
+    It allows the Fuji P-Chain address encoding.
     """
 
     @staticmethod
     def EncodeKey(pub_key: Union[bytes, IPublicKey],
                   **kwargs: Any) -> str:
         """
-        Encode a public key to Avax P-Chain address.
+        Encode a public key to Fuji P-Chain address.
         Args:
             pub_key (bytes or IPublicKey): Public key bytes or object
             **kwargs                     : Not used
@@ -75,21 +75,20 @@ class FujiPChainAddrEncoder(IAddrEncoder):
             TypeError: If the public key is not secp256k1
         """
         prefix = CoinsConf.FujiPChain.Params("addr_prefix")
-        return prefix + AtomAddrEncoder.EncodeKey(pub_key,
-                                                  hrp=CoinsConf.FujiPChain.Params("addr_hrp"))
+        return prefix + AtomAddrEncoder.EncodeKey(pub_key, hrp=CoinsConf.FujiPChain.Params("addr_hrp"))
 
 
 class FujiXChainAddrDecoder(IAddrDecoder):
     """
-    Avax X-Chain address decoder class.
-    It allows the Avax X-Chain address decoding.
+    Fuji X-Chain address decoder class.
+    It allows the Fuji X-Chain address decoding.
     """
 
     @staticmethod
     def DecodeAddr(addr: str,
                    **kwargs: Any) -> bytes:
         """
-        Decode an Avax X-Chain address to bytes.
+        Decode a Fuji X-Chain address to bytes.
         Args:
             addr (str): Address string
             **kwargs  : Not used
@@ -106,14 +105,14 @@ class FujiXChainAddrDecoder(IAddrDecoder):
 class FujiXChainAddrEncoder(IAddrEncoder):
     """
     Avax Testnet X-Chain address encoder class.
-    It allows the Avax X-Chain address encoding.
+    It allows the Fuji X-Chain address encoding.
     """
 
     @staticmethod
     def EncodeKey(pub_key: Union[bytes, IPublicKey],
                   **kwargs: Any) -> str:
         """
-        Encode a public key to Avax X-Chain address.
+        Encode a public key to Fuji X-Chain address.
         Args:
             pub_key (bytes or IPublicKey): Public key bytes or object
             **kwargs                     : Not used
@@ -124,8 +123,7 @@ class FujiXChainAddrEncoder(IAddrEncoder):
             TypeError: If the public key is not secp256k1
         """
         prefix = CoinsConf.FujiXChain.Params("addr_prefix")
-        return prefix + AtomAddrEncoder.EncodeKey(pub_key,
-                                                  hrp=CoinsConf.FujiXChain.Params("addr_hrp"))
+        return prefix + AtomAddrEncoder.EncodeKey(pub_key, hrp=CoinsConf.FujiXChain.Params("addr_hrp"))
 
 
 class FujiCChainAddrEncoder(IAddrEncoder):
@@ -148,6 +146,5 @@ class FujiCChainAddrEncoder(IAddrEncoder):
             ValueError: If the public key is not valid
             TypeError: If the public key is not secp256k1
         """
-        prefix = 'C-'
-        return prefix + AtomAddrEncoder.EncodeKey(pub_key,
-                                                  hrp=CoinsConf.FujiXChain.Params("addr_hrp"))
+        prefix = CoinsConf.FujiCChainBech32.Params("addr_prefix")
+        return prefix + AtomAddrEncoder.EncodeKey(pub_key, hrp=CoinsConf.FujiCChainBech32.Params("addr_hrp"))
