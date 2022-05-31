@@ -5,10 +5,19 @@ from bip_utils.utils.conf import CoinNames
 class CoinsConf:
     """Class container for coins configuration."""
 
-    # Configuration for Avax C-Chain
+    # Configuration for Avax C-Chain (Ethereum address format)
     AvaxCChain: CoinConf = CoinConf(
         coin_name=CoinNames("Avax C-Chain", "AVAX"),
         params={},
+    )
+
+    # Configuration for Avax C-Chain (Bech32 address format)
+    AvaxCChainBech32: CoinConf = CoinConf(
+        coin_name=CoinNames("Avax C-Chain", "AVAX"),
+        params={
+            "addr_hrp": "avax",
+            "addr_prefix": "C-",
+        },
     )
 
     # Configuration for Avax P-Chain
@@ -29,10 +38,19 @@ class CoinsConf:
         },
     )
 
-    # Configuration for Avax Testnet C-Chain
+    # Configuration for Avax Testnet C-Chain (Ethereum address format)
     FujiCChain: CoinConf = CoinConf(
         coin_name=CoinNames("Fuji C-Chain", "AVAX"),
         params={},
+    )
+
+    # Configuration for Avax Testnet C-Chain (Bech32 address format)
+    FujiCChainBech32: CoinConf = CoinConf(
+        coin_name=CoinNames("Fuji C-Chain", "AVAX"),
+        params={
+            "addr_hrp": "fuji",
+            "addr_prefix": "C-",
+        },
     )
 
     # Configuration for Avax Testnet P-Chain
