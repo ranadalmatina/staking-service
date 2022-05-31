@@ -10,7 +10,7 @@ from avalanche.web3 import AvaWeb3
 from avalanche.models import AtomicTx
 from avalanche.bech32 import bech32_to_bytes, bech32_address_from_public_key
 from common.bip.bip44_coins import Bip44Coins
-from common.bip.bip32 import fireblocks_public_key
+from common.bip.bip32 import fireblocks_public_key, eth_address_from_public_key
 
 
 class Command(BaseCommand):
@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
     def build_transaction(self):
         pub_key = fireblocks_public_key("44/1/0/0/0")
-        from_address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_C_CHAIN)
+        from_address = eth_address_from_public_key(pub_key.ToBytes())
         to_address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
         export_tx = self.build_export_tx(from_address)
         unsigned_tx = UnsignedTransaction(export_tx)
