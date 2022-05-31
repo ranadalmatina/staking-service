@@ -101,10 +101,15 @@ def broadcast_transaction(tx: AtomicTx):
     tx.save()
     response = issue_tx(tx.signed_transaction)
     if response.status_code == 200:
-        print(response.json())
-        result = response.json()['result']
-        if 'txID' in result:
-            tx.avalanche_tx_id = result['txID']
-            tx.confirm()
-            tx.save()
-    # TODO handle exception from Avalanche
+        response = response.json()
+        print(response)
+        if 'error' in response:
+            raise Exception("Error while issuing transaction")
+
+        if 'result' in response:
+            result = response['result']
+            if 'txID' in result:
+                tx.avalanche_tx_id = result['txID']
+                tx.confirm()
+                tx.save()
+    # TODO handle other types of exception from Avalanche and customise exception class
