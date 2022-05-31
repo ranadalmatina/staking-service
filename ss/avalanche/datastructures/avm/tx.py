@@ -69,7 +69,7 @@ class BaseTx(DataStructure):
         num_inputs = uint_to_num(raw[offset:offset + 4])
         offset += 4
         for i in range(num_inputs):
-            input = TransferableOutput.from_bytes(raw[offset:])
+            input = TransferableInput.from_bytes(raw[offset:])
             offset += len(input)
             inputs.append(input)
         memo_len = uint_to_num(raw[offset:offset + 4])
