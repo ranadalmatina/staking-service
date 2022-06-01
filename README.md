@@ -16,26 +16,11 @@ cp example.env .env
 ```
 
 1. Install [Docker](https://docs.docker.com/desktop/), if needed, and launch it to install command line tools.
-
-1. Build the docker containers.
-
-`docker compose -f local.yml build`
-
-1. Initialise the database by running the database migrations.
-
-`docker compose -f local.yml run django python manage.py migrate`
-
-1. (Optional) Setup username/password access the Django admin backend.
-
-`docker compose -f local.yml run django python manage.py createsuperuser`
-
-1. (Optional) Spin up the development server on port 8000.
-
-`docker compose -f local.yml up`
-
-1. Run the tests.
-
-`docker compose -f local.yml run django python manage.py test`
+1. Build the docker containers: `docker compose -f local.yml build`
+1. Initialize the database by running the database migrations: `docker compose -f local.yml run django python manage.py migrate`
+1. (Optional) Setup username/password access the Django admin backend: `docker compose -f local.yml run django python manage.py createsuperuser`
+1. (Optional) Spin up the development server on port 8000: `docker compose -f local.yml up`
+1. Run the tests: `docker compose -f local.yml run django python manage.py test`
 
 ## Docs
 
