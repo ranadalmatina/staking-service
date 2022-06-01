@@ -32,6 +32,27 @@ cp example.env .env
 7. Run the tests:
    `docker compose -f local.yml run django python manage.py test`
 
+## Contract Interaction
+
+### Local
+
+1. Deploy the [staking](https://github.com/ranaventures/staking) contracts using `scripts/deploy.sh`.
+
+2. Update your `.env` with the deployed contract addresses:
+
+```
+DJANGO_SETTINGS_MODULE=ss.settings.local
+CONTRACT_STAKING=0x...
+CONTRACT_ORACLE=0x...
+```
+
+3. Run your command (e.g. `read_state`):
+   `docker compose -f local.yml run django python manage.py read_state`
+
+### Fuji
+
+As above, but use `DJANGO_SETTINGS_MODULE=ss.settings.fuji` in your `.env`.
+
 ## Docs
 
 -   Django has amazing [documentation](https://docs.djangoproject.com/en/4.0/) and this project sticks closely to Django conventions.
