@@ -10,8 +10,8 @@ class AtomicTxAdmin(admin.ModelAdmin):
     readonly_fields = ('created_date', 'modified_date', 'from_derivation_path', 'from_address', 'to_derivation_path',
                        'to_address', 'amount', 'description', 'unsigned_transaction', 'tx_type', 'fireblocks_tx_id',
                        'signed_transaction', 'avalanche_tx_id', 'status', 'explorer_link', 'transaction_hash')
-    actions = ['resubmit']
     list_display = ('id', 'tx_type', 'created_date', 'from_address', 'amount', 'to_address', 'status')
+    actions = ['resubmit', 'rebroadcast']
 
     def explorer_link(self, obj):
         return get_explorer_link('FUJI_X', obj.avalanche_tx_id)
@@ -34,4 +34,12 @@ class AtomicTxAdmin(admin.ModelAdmin):
             tx.save()
             self.message_user(request, f'Reset state for {tx}', messages.SUCCESS)
 
-    resubmit.short_description = 'Roll state back'
+    resubmit.short_description = 'Resubmit'
+
+    def rebroadcast(self, request, queryset):
+        for tx in queryset:
+            tx.rebroadcast()
+            tx.save()
+            self.message_user(request, f'Reset state for {tx}', messages.SUCCESS)
+
+    rebroadcast.short_description = 'Rebroadcast'

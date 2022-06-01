@@ -69,6 +69,7 @@ class AtomicTx(models.Model):
 
     @transition(field=status, source=STATUS.SUBMITTED, target=STATUS.NEW)
     def resubmit(self):
+        # TODO testing only. Remove later
         pass
 
     @transition(field=status, source=STATUS.SUBMITTED, target=STATUS.AWAITING_SIGNATURE)
@@ -81,6 +82,11 @@ class AtomicTx(models.Model):
 
     @transition(field=status, source=STATUS.SIGNED, target=STATUS.BROADCAST)
     def broadcast(self):
+        pass
+
+    @transition(field=status, source=STATUS.BROADCAST, target=STATUS.SIGNED)
+    def rebroadcast(self):
+        # TODO testing only. Remove later
         pass
 
     @transition(field=status, source=STATUS.BROADCAST, target=STATUS.CONFIRMED)
