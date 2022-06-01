@@ -1,7 +1,7 @@
 from hexbytes import HexBytes
 from django.test import TestCase
 from avalanche.datastructures import UnsignedTransaction
-from avalanche.datastructures.evm import EVMExportTx
+from avalanche.datastructures.evm import EVMExportTx, EVMImportTx
 from avalanche.datastructures.platform import PlatformImportTx, PlatformExportTx
 
 
@@ -47,3 +47,15 @@ class DataStructureTestCase(TestCase):
         self.assertEqual(tx.codec_id.hex(), "0000")
         self.assertIsInstance(tx.atomic_tx, PlatformExportTx)
         self.assertEqual(tx.hash().hex(), "03868278ef00c9bd44907f7ea6c66c5741b850fb6a4adfba480c5ba4678a2859")
+
+    def test_unsigned_cchain_import_from_bytes(self):
+        data = HexBytes("0x000000000000000000057fc93d85c6d62c5b2ac0b519c87010ea5294012d1e407030d6acd0021cac10d50000"
+                        "00000000000000000000000000000000000000000000000000000000000000000001339ec139e45e76295ba81c6"
+                        "054ca4b9cc16ec6b0f02158bea5caf982ad4fad52000000003d9bdac0ed1d761330cf680efdeb1a42159eb387d6"
+                        "d2950c96f7d28f61bbe2aa00000005000000003b8b87c000000001000000000000000137925525b620412183d4d"
+                        "8f71e6f64b5e64420c4000000003b862ce73d9bdac0ed1d761330cf680efdeb1a42159eb387d6d2950c96f7d28f"
+                        "61bbe2aa")
+        tx = UnsignedTransaction.from_bytes(raw=data)
+        self.assertEqual(tx.codec_id.hex(), "0000")
+        self.assertIsInstance(tx.atomic_tx, EVMImportTx)
+        self.assertEqual(tx.hash().hex(), "9cbf5e59ab703fb847089a044a36bfa48425c8e47492f5f98e5d1b179b2f220e")
