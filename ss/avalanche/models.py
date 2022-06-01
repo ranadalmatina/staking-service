@@ -50,10 +50,11 @@ class AtomicTx(models.Model):
     status = FSMField(max_length=30, choices=STATUS, default=STATUS.NEW)
     avalanche_tx_id = models.TextField(blank=True)
 
+    class Meta:
+        ordering = ['-created_date']
 
     def __str__(self):
         return f'AtomicTx({self.id})'
-
 
     def get_unsigned_transaction(self) -> UnsignedTransaction:
         data = Base58Decoder.CheckDecode(str(self.unsigned_transaction))
