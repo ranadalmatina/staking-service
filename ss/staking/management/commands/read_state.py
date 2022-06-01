@@ -3,7 +3,7 @@ from staking.contracts import Contracts
 
 
 class Command(BaseCommand):
-    help = "Read some basic stake from our contracts"
+    help = "Read some basic state from our contracts"
 
     def handle(self, *args, **options):
         contracts = Contracts()
