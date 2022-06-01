@@ -38,3 +38,18 @@ cp example.env .env
 -   Avalanche RPC API [docs](https://docs.avax.network/apis/avalanchego/apis/c-chain/#avaxgetutxos).
 -   Avalanche transaction format [docs](https://docs.avax.network/specs/coreth-atomic-transaction-serialization).
 -   Fireblocks API [docs](https://docs.fireblocks.com/api/#exchangeasset).
+
+## Using vscode
+
+Because the project runs in docker, your local machine will not have the libraries installed for vscode to provide
+errors / linting / autocomplete. To fix that, you can create an local virtual environment and install the requirements there.
+
+To get VSCode to recognise it, you may have to do `ctrl + shift + p > Python: create terminal`. Then, in that terminal:
+
+1. Ensure you're in the `staking-service` folder.
+1. If you don't have it already: `python3 -m pip install --user virtualenv`
+1. `python3 -m venv env`
+1. `source env/bin/activate`
+1. `pip install -r requirements/requirements.txt`
+
+The language server should now be working. You can use `deactivate` to get out of the virtual env.

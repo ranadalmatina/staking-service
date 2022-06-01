@@ -135,3 +135,5 @@ dmypy.json
 
 fireblocks_secret.key
 rsync.sh
+
+.DS_STORE
