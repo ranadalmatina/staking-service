@@ -70,33 +70,37 @@ class AvalancheClient:
         return requests.post(self.c_chain_rpc_url, json=body)
 
 
-    def avm_get_utxos(self, addresses: list[str], source_chain: str, limit=1024, encoding="cb58"):
-        response = requests.post(self.x_chain_rpc_url, json={
-            "jsonrpc":"2.0",
-            "id"     : 1,
-            "method" :"avm.getUTXOs",
-            "params" :{
+    def avm_get_utxos(self, addresses: list[str], source_chain=None, limit=1024, encoding="cb58"):
+        body = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "avm.getUTXOs",
+            "params": {
                 "addresses": addresses,
-                "sourceChain": source_chain,
                 "limit": limit,
                 "encoding": encoding,
             }
-        })
-        return response
+        }
+        if source_chain is not None:
+            body["params"]["sourceChain"] = source_chain
 
-    def platform_get_utxos(self, addresses: list[str], source_chain: str, limit=1024, encoding="cb58"):
-        response = requests.post(self.p_chain_rpc_url, json={
+        return requests.post(self.x_chain_rpc_url, json=body)
+
+    def platform_get_utxos(self, addresses: list[str], source_chain=None, limit=1024, encoding="cb58"):
+        body = {
             "jsonrpc":"2.0",
             "id"     : 1,
             "method" :"platform.getUTXOs",
             "params" :{
                 "addresses": addresses,
-                "sourceChain": source_chain,
                 "limit": limit,
                 "encoding": encoding,
             }
-        })
-        return response
+        }
+        if source_chain is not None:
+            body["params"]["sourceChain"] = source_chain
+
+        return requests.post(self.p_chain_rpc_url, json=body)
 
 
     def avm_issue_tx(self, tx: str, encoding="cb58"):
