@@ -32,9 +32,45 @@ cp example.env .env
 7. Run the tests:
    `docker compose -f local.yml run django python manage.py test`
 
+## Contract Interaction
+
+### Local
+
+1. Deploy the [staking](https://github.com/ranaventures/staking) contracts using `scripts/deploy.sh`.
+
+2. Update your `.env` with the deployed contract addresses:
+
+```
+DJANGO_SETTINGS_MODULE=ss.settings.local
+CONTRACT_STAKING=0x...
+CONTRACT_ORACLE=0x...
+```
+
+3. Run your command (e.g. `read_state`):
+   `docker compose -f local.yml run django python manage.py read_state`
+
+### Fuji
+
+As above, but use `DJANGO_SETTINGS_MODULE=ss.settings.fuji` in your `.env`.
+
 ## Docs
 
 -   Django has amazing [documentation](https://docs.djangoproject.com/en/4.0/) and this project sticks closely to Django conventions.
 -   Avalanche RPC API [docs](https://docs.avax.network/apis/avalanchego/apis/c-chain/#avaxgetutxos).
 -   Avalanche transaction format [docs](https://docs.avax.network/specs/coreth-atomic-transaction-serialization).
 -   Fireblocks API [docs](https://docs.fireblocks.com/api/#exchangeasset).
+
+## Using vscode
+
+Because the project runs in docker, your local machine will not have the libraries installed for vscode to provide
+errors / linting / autocomplete. To fix that, you can create an local virtual environment and install the requirements there.
+
+To get VSCode to recognise it, you may have to do `ctrl + shift + p > Python: create terminal`. Then, in that terminal:
+
+1. Ensure you're in the `staking-service` folder.
+1. If you don't have it already: `python3 -m pip install --user virtualenv`
+1. `python3 -m venv env`
+1. `source env/bin/activate`
+1. `pip install -r requirements/requirements.txt`
+
+The language server should now be working. You can use `deactivate` to get out of the virtual env.
