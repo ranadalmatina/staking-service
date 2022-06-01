@@ -9,12 +9,18 @@ class AtomicTxAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     readonly_fields = ('created_date', 'modified_date', 'from_derivation_path', 'from_address', 'to_derivation_path',
                        'to_address', 'amount', 'description', 'unsigned_transaction', 'fireblocks_tx_id',
-                       'signed_transaction', 'avalanche_tx_id', 'status', 'explorer_link')
+                       'signed_transaction', 'avalanche_tx_id', 'status', 'explorer_link', 'transaction_hash')
     list_display = ('__str__', 'created_date', 'from_address', 'amount', 'to_address', 'status')
     actions = ['resubmit']
 
     def explorer_link(self, obj):
         return get_explorer_link('FUJI_X', obj.avalanche_tx_id)
+
+    def transaction_hash(self, obj):
+        if obj.unsigned_transaction != "":
+            unsigned_tx = obj.get_unsigned_transaction()
+            return unsigned_tx.hash().hex()
+        return None
 
     def resubmit(self, request, queryset):
         for tx in queryset:
