@@ -75,10 +75,14 @@ class Command(BaseCommand):
         xfer_out = self._create_outputs()
         outputs.append(xfer_out)
 
+        print('-----------UTXOs + Inputs----------')
+
         # For each UTXO we create an input
         response = self.get_utxos()
         utxos: list[str] = response['result']['utxos']
+        print(f'Num UTXOs: {len(utxos)}')
         for utxo in utxos:
+            print('-----------UTXO---------')
             utxo_bytes = Base58Decoder.CheckDecode(utxo)
             print(HexBytes(utxo_bytes).hex())
             utxo = UTXO.from_bytes(utxo_bytes)
@@ -87,7 +91,7 @@ class Command(BaseCommand):
             amount = utxo.output.amount
             asset_id = utxo.asset_id
 
-            print('-----------Inputs ---------')
+            print('-----------Input---------')
             index = num_to_uint32(0)
             sec_in = SECPTransferInput(amount=amount, address_indices=[index])
             print(sec_in.to_hex())
