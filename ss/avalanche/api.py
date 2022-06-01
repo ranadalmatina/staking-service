@@ -55,6 +55,20 @@ class AvalancheClient:
         })
         return response
 
+    def evm_get_utxos(self, addresses: list[str], source_chain: str, limit=1024, encoding="cb58"):
+        body = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "avax.getUTXOs",
+            "params": {
+                "addresses": addresses,
+                "sourceChain": source_chain,
+                "limit": limit,
+                "encoding": encoding,
+            }
+        }
+        return requests.post(self.c_chain_rpc_url, json=body)
+
 
     def avm_get_utxos(self, addresses: list[str], source_chain: str, limit=1024, encoding="cb58"):
         response = requests.post(self.x_chain_rpc_url, json={
