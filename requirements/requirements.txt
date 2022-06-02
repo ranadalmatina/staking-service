@@ -21,3 +21,8 @@ celery==5.2.6
 # Crypto
 web3==5.29.0
 bip-utils==2.3.0
+
+# Graphql
+gql==3.3.0
+graphql-core==3.2.1
+requests-toolbelt==0.9.1
