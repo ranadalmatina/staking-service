@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import dj_database_url
 import environ
+from web3 import Web3
 
 # Setup Django environ
 env = environ.Env()
@@ -181,5 +182,13 @@ FIREBLOCKS_PRIVATE_KEY = env('FIREBLOCKS_PRIVATE_KEY', default=None)
 
 FIREBLOCKS_DEFAULT_VAULT_ID = 0
 
-CONTRACT_STAKING = env('CONTRACT_STAKING', default=None)
-CONTRACT_ORACLE = env('CONTRACT_ORACLE', default=None)
+CONTRACT_STAKING = Web3.toChecksumAddress(
+    env('CONTRACT_STAKING', default=None)
+)
+CONTRACT_ORACLE = Web3.toChecksumAddress(
+    env('CONTRACT_ORACLE', default=None)
+)
+
+CUSTODY_WALLET_ADDRESS = Web3.toChecksumAddress(
+    env('CUSTODY_WALLET_ADDRESS', default=None)
+)
