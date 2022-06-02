@@ -13,13 +13,16 @@ from bip_utils.bip.bip32.bip32_base import Bip32PublicKey
 from web3.types import Wei
 
 
-def create_cchain_export_to_pchain(network_id: int, nonce, from_public_key: Bip32PublicKey, to_public_key: Bip32PublicKey, derivation_path: str, amount: Wei):
-    from_address = eth_address_from_public_key(
-        from_public_key.RawCompressed().ToBytes())
+def create_cchain_export_to_pchain(
+        network_id: int,
+        nonce,
+        from_public_key: Bip32PublicKey,
+        to_public_key: Bip32PublicKey,
+        derivation_path: str,
+        amount: Wei):
 
-    to_address = bech32_address_from_public_key(
-        to_public_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
-
+    from_address = eth_address_from_public_key(from_public_key.RawCompressed().ToBytes())
+    to_address = bech32_address_from_public_key(to_public_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
     pchain_address = pchain_address_from_address(to_address)
 
     export_tx = build_export_tx(
@@ -48,12 +51,10 @@ def build_export_tx(network_id: int, from_address: str, to_address_pchain: str, 
     threshold = num_to_uint32(1)
 
     p_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['P']['blockchainID']
-    p_chain_blockchain_id_buf = Base58Decoder.CheckDecode(
-        p_chain_blockchain_id_str)
+    p_chain_blockchain_id_buf = Base58Decoder.CheckDecode(p_chain_blockchain_id_str)
 
     c_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['C']['blockchainID']
-    c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(
-        c_chain_blockchain_id_str)
+    c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(c_chain_blockchain_id_str)
 
     avax_asset_id: str = DEFAULTS['networks'][network_id]['X']['avaxAssetID']
     avax_asset_id_buf = Base58Decoder.CheckDecode(avax_asset_id)
@@ -62,16 +63,13 @@ def build_export_tx(network_id: int, from_address: str, to_address_pchain: str, 
 
     amount = amount + import_fee
 
-    in1 = EVMInput(c_address, num_to_uint64(
-        amount + export_fee), avax_asset_id_buf, num_to_uint64(nonce))
+    in1 = EVMInput(c_address, num_to_uint64(amount + export_fee), avax_asset_id_buf, num_to_uint64(nonce))
 
-    sec_out = SECPTransferOutput(num_to_uint64(
-        amount), locktime, threshold, [to_address_pchain])
+    sec_out = SECPTransferOutput(num_to_uint64(amount), locktime, threshold, [to_address_pchain])
 
     xfer_out = TransferableOutput(avax_asset_id_buf, sec_out)
 
-    export_tx = EVMExportTx(
-        network_id, c_chain_blockchain_id_buf, p_chain_blockchain_id_buf, [in1], [xfer_out])
+    export_tx = EVMExportTx(network_id, c_chain_blockchain_id_buf, p_chain_blockchain_id_buf, [in1], [xfer_out])
 
     return export_tx
 

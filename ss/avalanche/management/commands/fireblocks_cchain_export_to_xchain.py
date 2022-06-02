@@ -30,8 +30,7 @@ class Command(BaseCommand):
     def get_to_address(self):
         # This is the only derivation path we are allowed on test workspace
         pub_key = fireblocks_public_key("44/1/0/0/0")
-        address = bech32_address_from_public_key(
-            pub_key.ToBytes(), Bip44Coins.FB_X_CHAIN)
+        address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_X_CHAIN)
         _chain, _bech32 = address.split('-')
         x_address = bech32_to_bytes(_bech32)
         print(HexBytes(x_address).hex())
@@ -49,13 +48,11 @@ class Command(BaseCommand):
         network_id = 5
         x_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['X']['blockchainID']
         assert x_chain_blockchain_id_str == '2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm'
-        x_chain_blockchain_id_buf = Base58Decoder.CheckDecode(
-            x_chain_blockchain_id_str)
+        x_chain_blockchain_id_buf = Base58Decoder.CheckDecode(x_chain_blockchain_id_str)
 
         c_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['C']['blockchainID']
         assert c_chain_blockchain_id_str == 'yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp'
-        c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(
-            c_chain_blockchain_id_str)
+        c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(c_chain_blockchain_id_str)
 
         avax_asset_id: str = DEFAULTS['networks'][network_id]['X']['avaxAssetID']
         assert avax_asset_id == 'U8iRqJoiJm8xZHAacmvYyZVwqQx6uDNtQeP3CQ6fcgQk3JqnK'
@@ -75,28 +72,22 @@ class Command(BaseCommand):
         network_id = num_to_uint32(5)
 
         print('-----------Inputs / Outputs ---------')
-        in1 = EVMInput(c_address, num_to_uint64(
-            amount + export_fee), avax_asset_id_buf, num_to_uint64(nonce))
+        in1 = EVMInput(c_address, num_to_uint64(amount + export_fee), avax_asset_id_buf, num_to_uint64(nonce))
         print(in1.to_hex())
-        sec_out = SECPTransferOutput(num_to_uint64(
-            amount), locktime, threshold, [x_address])
+        sec_out = SECPTransferOutput(num_to_uint64(amount), locktime, threshold, [x_address])
         print(sec_out.to_hex())
         xfer_out = TransferableOutput(avax_asset_id_buf, sec_out)
         print(xfer_out.to_hex())
-        export_tx = EVMExportTx(
-            network_id, c_chain_blockchain_id_buf, x_chain_blockchain_id_buf, [in1], [xfer_out])
+        export_tx = EVMExportTx(network_id, c_chain_blockchain_id_buf, x_chain_blockchain_id_buf, [in1], [xfer_out])
         print('--------------------------')
         print(export_tx.to_hex())
         return export_tx
 
     def get_signature(self):
-        pub_key = HexBytes(
-            "028d6742ba744686f0cea20e69154eed3f0bc654485ebebae5c76b9f49ff3ccb01")
-        msg_hash = HexBytes(
-            "4f95084168e94512dae3176e14f92b418d274bb92c549f11ffd39410f7f885f9")
+        pub_key = HexBytes("028d6742ba744686f0cea20e69154eed3f0bc654485ebebae5c76b9f49ff3ccb01")
+        msg_hash = HexBytes("4f95084168e94512dae3176e14f92b418d274bb92c549f11ffd39410f7f885f9")
         client = get_fireblocks_client()
-        response = client.get_transaction_by_id(
-            txid='b1fda85c-2dcf-4f86-a730-1a7dc13aef9c')
+        response = client.get_transaction_by_id(txid='b1fda85c-2dcf-4f86-a730-1a7dc13aef9c')
         sig = recoverable_signature(response['signedMessages'])
         verify_message_hash(pub=pub_key, msg_hash=msg_hash, sig=sig)
         return sig

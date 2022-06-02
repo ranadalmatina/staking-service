@@ -27,8 +27,7 @@ class Command(BaseCommand):
     def get_to_address(self):
         # This is the only derivation path we are allowed on test workspace
         pub_key = fireblocks_public_key("44/1/0/0/0")
-        address = bech32_address_from_public_key(
-            pub_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
+        address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
         _chain, _bech32 = address.split('-')
         p_address = bech32_to_bytes(_bech32)
         print(HexBytes(p_address).hex())
@@ -37,8 +36,7 @@ class Command(BaseCommand):
     def build_transaction(self):
         pub_key = fireblocks_public_key("44/1/0/0/0")
         from_address = eth_address_from_public_key(pub_key.ToBytes())
-        to_address = bech32_address_from_public_key(
-            pub_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
+        to_address = bech32_address_from_public_key(pub_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
         export_tx = self.build_export_tx(from_address)
         unsigned_tx = UnsignedTransaction(export_tx)
         export_tx = AtomicTx(from_derivation_path="44/1/0/0/0",
@@ -58,13 +56,11 @@ class Command(BaseCommand):
         network_id = 5
         p_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['P']['blockchainID']
         assert p_chain_blockchain_id_str == "11111111111111111111111111111111LpoYY"
-        p_chain_blockchain_id_buf = Base58Decoder.CheckDecode(
-            p_chain_blockchain_id_str)
+        p_chain_blockchain_id_buf = Base58Decoder.CheckDecode(p_chain_blockchain_id_str)
 
         c_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['C']['blockchainID']
         assert c_chain_blockchain_id_str == 'yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp'
-        c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(
-            c_chain_blockchain_id_str)
+        c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(c_chain_blockchain_id_str)
 
         avax_asset_id: str = DEFAULTS['networks'][network_id]['X']['avaxAssetID']
         assert avax_asset_id == 'U8iRqJoiJm8xZHAacmvYyZVwqQx6uDNtQeP3CQ6fcgQk3JqnK'
@@ -84,16 +80,13 @@ class Command(BaseCommand):
         network_id = num_to_uint32(5)
 
         print('-----------Inputs / Outputs ---------')
-        in1 = EVMInput(c_address, num_to_uint64(
-            amount + export_fee), avax_asset_id_buf, num_to_uint64(nonce))
+        in1 = EVMInput(c_address, num_to_uint64(amount + export_fee), avax_asset_id_buf, num_to_uint64(nonce))
         print(in1.to_hex())
-        sec_out = SECPTransferOutput(num_to_uint64(
-            amount), locktime, threshold, [p_address])
+        sec_out = SECPTransferOutput(num_to_uint64(amount), locktime, threshold, [p_address])
         print(sec_out.to_hex())
         xfer_out = TransferableOutput(avax_asset_id_buf, sec_out)
         print(xfer_out.to_hex())
-        export_tx = EVMExportTx(
-            network_id, c_chain_blockchain_id_buf, p_chain_blockchain_id_buf, [in1], [xfer_out])
+        export_tx = EVMExportTx(network_id, c_chain_blockchain_id_buf, p_chain_blockchain_id_buf, [in1], [xfer_out])
         print('--------------------------')
         print(export_tx.to_hex())
         return export_tx

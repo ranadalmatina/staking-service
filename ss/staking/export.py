@@ -15,11 +15,8 @@ class Export:
         try:
             derivation_path = "44/1/0/0/0"
 
-            from_key = public_key_from_string(
-                settings.FIREBLOCKS_XPUB, derivation_path)
-
-            from_address = eth_address_from_public_key(
-                from_key.RawCompressed().ToBytes())
+            from_key = public_key_from_string(settings.FIREBLOCKS_XPUB, derivation_path)
+            from_address = eth_address_from_public_key(from_key.RawCompressed().ToBytes())
 
             nonce = client.get_nonce(from_address)
 
