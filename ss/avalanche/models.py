@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 MAX_DEC_PLACES = 18
 
+
 class AtomicTx(models.Model):
     """
     An export or import transaction on the avalanche network.
@@ -34,7 +35,6 @@ class AtomicTx(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
 
     from_derivation_path = models.TextField(help_text="Derivation path for from address")
     from_address = models.TextField()

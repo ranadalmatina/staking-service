@@ -1,5 +1,5 @@
 from hexbytes import HexBytes
-from decimal import Decimal
+from web3 import Web3
 from avalanche.base58 import Base58Decoder, Base58Encoder
 from avalanche.tools import num_to_uint32, num_to_uint64
 from avalanche.constants import DEFAULTS
@@ -22,7 +22,7 @@ def create_cchain_export_to_pchain(
         amount: Wei):
 
     from_address = eth_address_from_public_key(from_public_key.RawCompressed().ToBytes())
-    to_address = bech32_address_from_public_key(to_public_key.ToBytes(), Bip44Coins.FB_P_CHAIN)
+    to_address = bech32_address_from_public_key(to_public_key.RawCompressed().ToBytes(), Bip44Coins.FB_P_CHAIN)
     pchain_address = pchain_address_from_address(to_address)
 
     export_tx = build_export_tx(
@@ -38,7 +38,8 @@ def create_cchain_export_to_pchain(
                                from_address=from_address,
                                to_derivation_path=derivation_path,
                                to_address=to_address,
-                               amount=amount,
+                               # TODO: Storing the value in wei fails - is this correct?
+                               amount=Web3.fromWei(amount, 'ether'),
                                description="Export AVAX from C-Chain to P-Chain",
                                unsigned_transaction=Base58Encoder.CheckEncode(unsigned_tx.to_bytes()))
     export_tx_model.save()
@@ -69,7 +70,13 @@ def build_export_tx(network_id: int, from_address: str, to_address_pchain: str, 
 
     xfer_out = TransferableOutput(avax_asset_id_buf, sec_out)
 
-    export_tx = EVMExportTx(network_id, c_chain_blockchain_id_buf, p_chain_blockchain_id_buf, [in1], [xfer_out])
+    export_tx = EVMExportTx(
+        num_to_uint32(network_id),
+        c_chain_blockchain_id_buf,
+        p_chain_blockchain_id_buf,
+        [in1],
+        [xfer_out]
+    )
 
     return export_tx
 
