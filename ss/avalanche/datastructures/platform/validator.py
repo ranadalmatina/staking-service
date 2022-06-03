@@ -20,8 +20,9 @@ class Validator:
         self.delegators = delegators
 
     @staticmethod
-    def from_json(json_data):
-        delegators = [Delegator(Web3.toWei(delegator['stakeAmount'], 'wei')) for delegator in json_data['delegators']]
+    def from_json(json_data: dict):
+        raw_delegators = json_data['delegators'] if json_data['delegators'] else []
+        delegators = [Delegator(Web3.toWei(delegator['stakeAmount'], 'wei')) for delegator in raw_delegators]
         return Validator(
             json_data['nodeID'],
             Web3.toWei(json_data['stakeAmount'], 'wei'),
