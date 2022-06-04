@@ -12,8 +12,9 @@ class Delegator:
 
 class Validator:
 
-    def __init__(self, node_id, stake: Wei, start_time: int, end_time: int, delegators: list[Delegator]):
+    def __init__(self, node_id, uptime: float, stake: Wei, start_time: int, end_time: int, delegators: list[Delegator]):
         self.node_id = node_id
+        self.uptime = uptime
         self.stake = stake
         self.start_time = start_time
         self.end_time = end_time
@@ -25,6 +26,7 @@ class Validator:
         delegators = [Delegator(Web3.toWei(delegator['stakeAmount'], 'wei')) for delegator in raw_delegators]
         return Validator(
             json_data['nodeID'],
+            float(json_data['uptime']),
             Web3.toWei(json_data['stakeAmount'], 'wei'),
             int(json_data['startTime']),
             int(json_data['endTime']),

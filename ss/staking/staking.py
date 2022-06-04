@@ -16,6 +16,8 @@ class Staking:
         balance = Web3.toWei(0.001, 'ether')
 
         # TODO: Maintain allowlist of validators to stake with
+        min_uptime = 0.9
+        min_staking_period = 14 * 24 * 60 * 60  # seconds
 
         # Load validator data
         self.client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
@@ -24,13 +26,21 @@ class Staking:
 
         # For now, just shove everything on one node.
         # TODO: We need to break this up across multiple nodes for large stakes
-        with_min_space = [v for v in validators if v.free_space > balance]
+        filtered = []
+        for v in validators:
+            if v.free_space < balance:
+                continue
+            if v.remaining_time < min_staking_period:
+                continue
+            if v.uptime < min_uptime:
+                continue
+            filtered.append(v)
 
-        if len(with_min_space) == 0:
-            logger.warning('No validators with enough space to stake')
+        if len(filtered) == 0:
+            logger.warning('No validators found that meet our minimum requirements')
             return
 
-        validator = random.choice(with_min_space)
+        validator = random.choice(filtered)
 
         # TODO: Create a staking transaction
         logger.info(f'Staking {balance} AVAX on {validator.node_id}')
