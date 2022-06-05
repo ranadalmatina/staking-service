@@ -1,3 +1,4 @@
+from django.conf import settings
 from hexbytes import HexBytes
 from decimal import Decimal
 from django.core.management.base import BaseCommand
@@ -48,7 +49,7 @@ class Command(BaseCommand):
         print(unsigned_tx.hash().hex())
 
     def get_utxos(self, destination_address):
-        client = AvalancheClient()
+        client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
         response = client.evm_get_utxos(addresses=[destination_address], source_chain='P')
         print(response.json())
         return response.json()
@@ -95,7 +96,6 @@ class Command(BaseCommand):
             outputs.append(evm_output)
 
         return outputs, inputs
-
 
     def build_import_tx(self, to_address: str):
         network_id = 5

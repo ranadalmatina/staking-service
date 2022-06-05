@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.conf import settings
 from hexbytes import HexBytes
 from django.core.management.base import BaseCommand
 from avalanche.base58 import Base58Decoder, Base58Encoder
@@ -41,7 +42,7 @@ class Command(BaseCommand):
 
     def get_utxos(self):
         address = self._get_p_chain_bech32()
-        client = AvalancheClient()
+        client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
         response = client.platform_get_utxos(addresses=[address])
         print(response.json())
         return response.json()
@@ -55,7 +56,6 @@ class Command(BaseCommand):
         locktime = num_to_uint64(0)
         threshold = num_to_uint32(1)
         c_address = self._get_c_chain_address()
-
 
         avax_asset_id: str = DEFAULTS['networks'][network_id]['X']['avaxAssetID']
         assert avax_asset_id == 'U8iRqJoiJm8xZHAacmvYyZVwqQx6uDNtQeP3CQ6fcgQk3JqnK'
@@ -132,7 +132,6 @@ class Command(BaseCommand):
         base_tx = BaseTx(network_id=network_id, blockchain_id=p_chain_blockchain_id_buf, outputs=[],
                          inputs=inputs, memo=memo)
         export_tx = PlatformExportTx(base_tx=base_tx, destination_chain=c_chain_blockchain_id_buf, outs=outputs)
-
 
         print('--------------------------')
         print(export_tx.to_hex())
