@@ -109,15 +109,15 @@ class DataStructureTestCase(TestCase):
         self.assertEqual(delegator.amount, Wei(25000000000))
 
     def test_validator_free_space(self):
-        empty = Validator("foo", Web3.toWei(100, "ether"), 0, 0, [])
+        empty = Validator("foo", 0, Web3.toWei(100, "ether"), 0, 0, [])
         self.assertEqual(empty.free_space, Web3.toWei(400, "ether"))
 
         delegators = [Delegator(Web3.toWei(1, "ether")) for _ in range(10)]
-        val = Validator("foo", Web3.toWei(100, "ether"), 0, 0, delegators)
+        val = Validator("foo", 0, Web3.toWei(100, "ether"), 0, 0, delegators)
         self.assertEqual(val.free_space, Web3.toWei(390, "ether"))
 
     @mock.patch('time.time', mock.MagicMock(return_value=1500000000))
     def test_validator_remaining_time(self):
         one_year = 60 * 60 * 24 * 365
-        validator = Validator("foo", 0, 1, time.time() + one_year, [])
+        validator = Validator("foo", 0, Web3.toWei(0, "ether"), 1, time.time() + one_year, [])
         self.assertEqual(validator.remaining_time, one_year)
