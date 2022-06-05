@@ -1,3 +1,4 @@
+from django.conf import settings
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from functools import cached_property
@@ -8,16 +9,13 @@ class AvaWeb3:
     Avalanche Go RPC client.
     """
     C_CHAIN = "/ext/bc/C/rpc"
-    url = None
 
-    def __init__(self, RPC_URL=None):
-        if RPC_URL is None:
-            raise Exception("RPC URL is not set")
-        self.url = RPC_URL
+    def __init__(self):
+        self.base_url = settings.AVAX_RPC_URL
 
     @property
     def rpc_url(self):
-        return f'{self.url}{self.C_CHAIN}'
+        return f'{self.base_url}{self.C_CHAIN}'
 
     @cached_property
     def web3(self):
@@ -27,8 +25,7 @@ class AvaWeb3:
 
     def get_balance(self, address):
         from_address = self.web3.toChecksumAddress(address)
-        amount = self.web3.fromWei(
-            self.web3.eth.get_balance(from_address), 'ether')
+        amount = self.web3.fromWei(self.web3.eth.get_balance(from_address), 'ether')
         return amount
 
     def get_nonce(self, address):

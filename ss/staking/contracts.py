@@ -4,6 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from enum import Enum
 from django.conf import settings
+from web3 import Web3
 from avalanche.web3 import AvaWeb3
 
 
@@ -15,7 +16,7 @@ class Contract(str, Enum):
 class Contracts:
 
     def __init__(self):
-        self.client = AvaWeb3(RPC_URL=settings.AVAX_RPC_URL)
+        self.client = AvaWeb3()
 
         self.staking = self.client.web3.eth.contract(
             address=self.staking_address,
@@ -31,13 +32,13 @@ class Contracts:
     def staking_address(self):
         if settings.CONTRACT_STAKING is None:
             raise ImproperlyConfigured('The CONTRACT_STAKING env var has not been set')
-        return AvaWeb3.toChecksumAddress(settings.CONTRACT_STAKING)
+        return Web3.toChecksumAddress(settings.CONTRACT_STAKING)
 
     @property
     def oracle_address(self):
         if settings.CONTRACT_ORACLE is None:
             raise ImproperlyConfigured('The CONTRACT_ORACLE env var has not been set')
-        return AvaWeb3.toChecksumAddress(settings.CONTRACT_ORACLE)
+        return Web3.toChecksumAddress(settings.CONTRACT_ORACLE)
 
     def load_abi_file(self, contract_name: Contract):
         path = os.path.join(os.path.dirname(__file__), f'abis/{contract_name}.json')
