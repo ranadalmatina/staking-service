@@ -182,9 +182,5 @@ FIREBLOCKS_PRIVATE_KEY = env('FIREBLOCKS_PRIVATE_KEY', default=None)
 
 FIREBLOCKS_DEFAULT_VAULT_ID = 0
 
-CONTRACT_STAKING = Web3.toChecksumAddress(
-    env('CONTRACT_STAKING', default=None)
-)
-CONTRACT_ORACLE = Web3.toChecksumAddress(
-    env('CONTRACT_ORACLE', default=None)
-)
+CONTRACT_STAKING = env('CONTRACT_STAKING', default=None)
+CONTRACT_ORACLE = env('CONTRACT_ORACLE', default=None)
