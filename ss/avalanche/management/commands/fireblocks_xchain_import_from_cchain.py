@@ -1,3 +1,4 @@
+from django.conf import settings
 from hexbytes import HexBytes
 from django.core.management.base import BaseCommand
 from avalanche.base58 import Base58Decoder, Base58Encoder
@@ -29,7 +30,7 @@ class Command(BaseCommand):
     def get_utxos(self):
         address = self._get_x_chain_bech32()
         c_chain_blockchain_id_str: str = DEFAULTS['networks'][self.network_id]['C']['blockchainID']
-        client = AvalancheClient()
+        client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
         response = client.avm_get_utxos(addresses=[address], source_chain=c_chain_blockchain_id_str)
         print(response.json())
         return response.json()
@@ -103,7 +104,6 @@ class Command(BaseCommand):
                          inputs=[], memo=memo)
         import_tx = AVMImportTx(base_tx=base_tx, source_chain=c_chain_blockchain_id_buf, ins=inputs)
 
-
         print('--------------------------')
         print(import_tx.to_hex())
         unsigned_tx = UnsignedTransaction(import_tx)
@@ -132,8 +132,7 @@ class Command(BaseCommand):
         b58_signed_tx = Base58Encoder.CheckEncode(signed_tx.to_bytes())
         print(b58_signed_tx)
         print('-----------Transmission to Network-----------')
-        client = AvalancheClient()
+        client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
         response = client.avm_issue_tx(tx=b58_signed_tx)
         if response.status_code == 200:
             print(response.json())
-

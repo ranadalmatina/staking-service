@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def get_nonce(self, address):
         web3 = AvaWeb3()
-        print(web3.get_balance(address))
+        print(web3.get_balance_ether(address))
         return web3.get_nonce(address)
 
     def get_to_address(self):
@@ -51,7 +51,6 @@ class Command(BaseCommand):
         print(unsigned_tx.to_hex())
         print('----------HASH----------')
         print(unsigned_tx.hash().hex())
-
 
     def build_export_tx(self, from_address: str):
         network_id = 5

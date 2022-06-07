@@ -1,1 +1,1 @@
-FROM postgres:14.2-bullseye
+FROM postgres:14.3-bullseye

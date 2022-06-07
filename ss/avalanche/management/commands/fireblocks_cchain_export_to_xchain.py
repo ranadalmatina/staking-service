@@ -1,3 +1,4 @@
+from django.conf import settings
 from hexbytes import HexBytes
 from django.core.management.base import BaseCommand
 from avalanche.base58 import Base58Decoder, Base58Encoder
@@ -23,7 +24,7 @@ class Command(BaseCommand):
 
     def get_nonce(self, address):
         web3 = AvaWeb3()
-        print(web3.get_balance(address))
+        print(web3.get_balance_ether(address))
         return web3.get_nonce(address)
 
     def get_to_address(self):
@@ -42,7 +43,6 @@ class Command(BaseCommand):
         print(unsigned_tx.to_hex())
         print('----------HASH----------')
         print(unsigned_tx.hash().hex())
-
 
     def build_export_tx(self):
         network_id = 5
@@ -102,10 +102,7 @@ class Command(BaseCommand):
         b58_signed_tx = Base58Encoder.CheckEncode(signed_tx.to_bytes())
         print(b58_signed_tx)
         print('-----------Transmission to Network-----------')
-        client = AvalancheClient()
+        client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
         response = client.evm_issue_tx(tx=b58_signed_tx)
         if response.status_code == 200:
             print(response.json())
-
-
-

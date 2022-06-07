@@ -1,4 +1,6 @@
 import logging
+
+from django.conf import settings
 from common.bip.bip32 import fireblocks_public_key
 from fireblocks.client import get_fireblocks_client, FireblocksApiException
 from fireblocks.utils.raw_signing import recoverable_signature, verify_message_hash
@@ -37,7 +39,6 @@ def send_for_signing(tx: AtomicTx):
             tx.save()
 
 
-
 def _get_signed_messages(tx: AtomicTx):
     """
     Fetch signed messages from Fireblocks for the given Transaction
@@ -50,7 +51,6 @@ def _get_signed_messages(tx: AtomicTx):
         if 'signedMessages' in response:
             return response['signedMessages']
     return None
-
 
 
 def _check_for_signature(tx: AtomicTx):
@@ -81,14 +81,13 @@ def check_for_signature(tx: AtomicTx):
     return None
 
 
-
 def broadcast_transaction(tx: AtomicTx):
     assert tx.status == tx.STATUS.SIGNED
     unsigned_tx = tx.get_unsigned_transaction()
     source_chain = unsigned_tx.get_source_chain()
 
     def get_issue_tx():
-        client = AvalancheClient()
+        client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
         issue_tx = {
             PChainAlias: client.platform_issue_tx,
             XChainAlias: client.avm_issue_tx,
