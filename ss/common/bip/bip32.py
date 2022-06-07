@@ -6,12 +6,13 @@ from bip_utils.ecc.secp256k1_keys_coincurve import Secp256k1PublicKeyCoincurve
 
 def fireblocks_public_key(derivation_path="44/1/0/0/0"):
     fireblocks_xpub = settings.FIREBLOCKS_XPUB
-    fb_bip32_ctx = Bip32Secp256k1.FromExtendedKey(fireblocks_xpub)
-    bip32_ctx = fb_bip32_ctx.DerivePath(derivation_path)
-    # Print keys in extended format
-    print(bip32_ctx.PublicKey().ToExtended())
-    print(bip32_ctx.PublicKey().RawCompressed())
-    return bip32_ctx.PublicKey().RawCompressed()
+    return public_key_from_string(fireblocks_xpub, derivation_path).RawCompressed()
+
+
+def public_key_from_string(public_key_str: str, derivation_path="44/1/0/0/0"):
+    bip32_ctx = Bip32Secp256k1.FromExtendedKey(public_key_str)
+    derrived = bip32_ctx.DerivePath(derivation_path)
+    return derrived.PublicKey()
 
 
 def eth_address_from_public_key(public_key: bytes):
