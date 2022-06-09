@@ -5,14 +5,12 @@ from django_fsm import FSMField, transition
 from extended_choices import Choices
 
 from common.validators import validate_positive
+from common.constants import MAX_DEC_PLACES
 from avalanche.base58 import Base58Decoder
 from avalanche.datastructures import UnsignedTransaction
 from avalanche.datastructures.types import AtomicTx as AtomicTxType
 
 logger = logging.getLogger(__name__)
-
-
-MAX_DEC_PLACES = 18
 
 
 class AtomicTx(models.Model):
