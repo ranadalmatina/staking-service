@@ -40,7 +40,8 @@ class AtomicTx(models.Model):
     from_address = models.TextField()
     to_derivation_path = models.TextField(help_text="Derivation path for to address")
     to_address = models.TextField()
-    amount = models.DecimalField(max_digits=30, decimal_places=MAX_DEC_PLACES, validators=[validate_positive])
+    amount = models.DecimalField(max_digits=30, decimal_places=MAX_DEC_PLACES, validators=[validate_positive],
+                                 help_text="Amount in AVAX")
     description = models.TextField()
 
     unsigned_transaction = models.TextField(blank=True, help_text="Base58 encoded unsigned transaction")
