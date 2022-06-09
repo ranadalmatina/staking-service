@@ -254,7 +254,7 @@ class Transaction(models.Model):
 
     @property
     def amount(self):
-        if 'amount' in self.data:
+        if 'amount' in self.data and self.data['amount']:
             return Decimal(str(self.data['amount']))
         return None
 
