@@ -7,7 +7,6 @@ from web3.types import Wei
 from .models import FillJob
 from staking.graphql import GraphAPI
 from staking.contracts import Contracts
-from fireblocks.models import Transaction
 from fireblocks.client import get_fireblocks_client
 
 pending_states = [FillJob.STATUS.NEW, FillJob.STATUS.PENDING]
@@ -25,19 +24,17 @@ class Fill:
     def __init__(self) -> None:
         self.fb_client = get_fireblocks_client()
         self.contracts = Contracts()
-        pass
 
     def run_fill(self, amount_override: Wei = None):
 
         # Check if ongoing fill is happening.
-        jobs = FillJob.objects.filter(status__in=pending_states)
-        if len(jobs) > 0:
-            if jobs[0].status == FillJob.STATUS.NEW:
+        for job in FillJob.objects.filter(status__in=pending_states):
+            if job.status == FillJob.STATUS.NEW:
                 logger.info(f'Found non-executed job, submitting transaciton.')
-                self.submit_transaction(jobs[0])
+                self.submit_transaction(job)
                 return
 
-            logger.info(f'Found {len(jobs)} pending jobs, skipping.')
+            logger.info(f'Found at least 1 pending jobs, skipping.')
             return
 
         # Compute deficit
@@ -58,10 +55,7 @@ class Fill:
             return
 
         logger.info(f'Found deficit of {deficit} AVAX')
-        job = FillJob.objects.create(
-            status=FillJob.STATUS.NEW,
-            amount_wei=deficit,
-        )
+        job = FillJob.objects.create(status=FillJob.STATUS.NEW, amount_wei=deficit)
         job.save()
 
         # Send transaction to fireblocks and put job into Pending state.
