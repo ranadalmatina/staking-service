@@ -29,7 +29,7 @@ class Fill:
 
     def run_fill(self, amount_override: Wei = None):
 
-        # 0. Check if ongoing fill is happening.
+        # Check if ongoing fill is happening.
         jobs = FillJob.objects.filter(status__in=pending_states)
         if len(jobs) > 0:
             if jobs[0].status == FillJob.STATUS.NEW:
@@ -40,10 +40,9 @@ class Fill:
             logger.info(f'Found {len(jobs)} pending jobs, skipping.')
             return
 
-        # 1. Compute deficit
+        # Compute deficit
         graphapi = GraphAPI(settings.GRAPHQL_URL)
         deficit = graphapi.contract_avax_deficit() if not amount_override else amount_override
-
         logger.info(f'Contract deficit: {deficit}')
 
         # Check we have enough balance to make the tx.
@@ -53,7 +52,7 @@ class Fill:
             logger.info(f'Custody balance {balance} is below deficit of {deficit}')
             return
 
-        # 2. Create a new job if there's a deficit.
+        # Create a new job if there's a deficit.
         if deficit == 0:
             logger.info(f'No deficit, not creating a new job')
             return
@@ -65,8 +64,13 @@ class Fill:
         )
         job.save()
 
-        # 3. Request fireblocks sign the transaction
+        # Send transaction to fireblocks and put job into Pending state.
         self.submit_transaction(job)
+
+        # TODO:
+        # - Check if transaction was successful
+        # - If not, mark job as failed
+        # - If yes, mark job as completed
 
     def submit_transaction(self, job):
         if job.status != FillJob.STATUS.NEW:
@@ -85,11 +89,10 @@ class Fill:
                 data=raw_data,
                 note="Fill contract deficit",
             )
-            print(tx)
             job.fireblocks_transaction_id = tx['id']
             job.submit()
             job.save()
         except Exception as e:
             logger.error(e)
             traceback.print_tb(e.__traceback__)
-            return
+            raise e
