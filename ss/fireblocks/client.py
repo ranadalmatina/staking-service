@@ -6,6 +6,8 @@ from fireblocks_sdk import EXTERNAL_WALLET, UNKNOWN_PEER, VAULT_ACCOUNT, Unsigne
 from fireblocks_sdk.sdk import DestinationTransferPeerPath, FireblocksApiException, FireblocksSDK, TransferPeerPath
 
 from django.conf import settings
+from web3 import Web3
+from web3.types import Wei
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +65,26 @@ class FireblocksClient(FireblocksSDK):
             ]
         )
         return self.create_raw_transaction(asset_id=asset_id, source=source, raw_message=raw_message, note=note)
+
+    def external_contract_call(self, vault_account_id: str, asset_id: str, external_contract_id: str,
+                               amount: str, data: bytes, note: str):
+        source = TransferPeerPath(peer_type=VAULT_ACCOUNT, peer_id=vault_account_id)
+        dest = DestinationTransferPeerPath(peer_type=EXTERNAL_WALLET, peer_id=external_contract_id)
+        return self.create_transaction(
+            asset_id=asset_id,
+            source=source,
+            destination=dest,
+            amount=amount,
+            extra_parameters={
+                'contractCallData': data,
+            },
+            note=note,
+        )
+
+    def available_balance_wei(self, vault_account_id: str, asset_id: str) -> Wei:
+        asset = self.get_vault_account_asset(vault_account_id, asset_id)
+        available = asset['available']
+        return Web3.toWei(available, 'ether')
 
 
 def get_fireblocks_client():
