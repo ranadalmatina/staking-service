@@ -26,15 +26,18 @@ class Fill:
         self.contracts = Contracts()
 
     def run_fill(self, amount_override: Wei = None):
+        # There should never be more than one pending fill job
+        assert FillJob.objects.filter(status__in=pending_states).count() <= 1
 
         # Check if ongoing fill is happening.
-        for job in FillJob.objects.filter(status__in=pending_states):
+        job = FillJob.objects.filter(status__in=pending_states).first()
+        if job is not None:
             if job.status == FillJob.STATUS.NEW:
                 logger.info(f'Found non-executed job, submitting transaciton.')
                 self.submit_transaction(job)
                 return
 
-            logger.info(f'Found at least 1 pending jobs, skipping.')
+            logger.info(f'Found a pending fill job, skipping.')
             return
 
         # Compute deficit
