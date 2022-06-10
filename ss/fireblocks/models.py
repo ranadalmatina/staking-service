@@ -201,7 +201,7 @@ class UnmatchedTransactionManager(models.Manager):
 
     def get_queryset(self):
         # When looping over unlinked Transactions, start with the earliest first
-        return super().get_queryset().filter(is_contract_call=False, deposit__isnull=True, withdrawal__isnull=True).order_by('created_at')
+        return super().get_queryset().filter(deposit__isnull=True, withdrawal__isnull=True).order_by('created_at')
 
 
 class Transaction(models.Model):
