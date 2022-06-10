@@ -1,0 +1,8 @@
+# These additional requirements are used by the build server for linting and vulnerability checking
+
+# Used for sorting imports and marking any possible linting or code issues
+isort==5.10.1
+flake8==4.0.1
+
+# Vulnerability detection
+safety==1.10.3
