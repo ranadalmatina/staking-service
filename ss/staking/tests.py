@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from .factories import FillJobFactory
 from .models import FillJob
+from .fill import Fill
 
 
 class FillJobModelTestCase(TestCase):
@@ -21,3 +22,13 @@ class FillJobModelTestCase(TestCase):
         job = FillJob.objects.create(status=FillJob.STATUS.NEW, amount_wei=amount_wei)
         self.assertEqual(FillJob.objects.count(), 1)
         self.assertEqual(job.amount, Decimal('9.876'))
+
+
+class TestFillTask(TestCase):
+
+    def test_run_fil_multiple_pending_jobs(self):
+        FillJobFactory(status=FillJob.STATUS.NEW)
+        FillJobFactory(status=FillJob.STATUS.PENDING)
+        runner = Fill()
+        with self.assertRaises(AssertionError):
+            runner.run_fill()
