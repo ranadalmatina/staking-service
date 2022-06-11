@@ -2,7 +2,7 @@ import logging
 import os.path
 from decimal import Decimal
 
-from fireblocks_sdk import EXTERNAL_WALLET, UNKNOWN_PEER, VAULT_ACCOUNT, UnsignedMessage, RawMessage
+from fireblocks_sdk import EXTERNAL_WALLET, UNKNOWN_PEER, VAULT_ACCOUNT, UnsignedMessage, RawMessage, CONTRACT_CALL
 from fireblocks_sdk.sdk import DestinationTransferPeerPath, FireblocksApiException, FireblocksSDK, TransferPeerPath
 
 from django.conf import settings
@@ -79,6 +79,7 @@ class FireblocksClient(FireblocksSDK):
                 'contractCallData': data,
             },
             note=note,
+            tx_type=CONTRACT_CALL,
         )
 
     def available_balance_wei(self, vault_account_id: str, asset_id: str) -> Wei:
