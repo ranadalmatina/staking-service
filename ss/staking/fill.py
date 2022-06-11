@@ -1,3 +1,4 @@
+import json
 import logging
 import traceback
 
@@ -8,6 +9,8 @@ from .models import FillJob
 from staking.graphql import GraphAPI
 from staking.contracts import Contracts
 from fireblocks.client import get_fireblocks_client
+from fireblocks_sdk import TRANSACTION_STATUS_COMPLETED, TRANSACTION_STATUS_FAILED
+from fireblocks_sdk.api_types import FireblocksApiException
 
 pending_states = [FillJob.STATUS.NEW, FillJob.STATUS.PENDING]
 
@@ -37,7 +40,11 @@ class Fill:
                 self.submit_transaction(job)
                 return
 
-            logger.info(f'Found a pending fill job, skipping.')
+            if job.status == FillJob.STATUS.PENDING:
+                logger.info(f'Found pending job, checking transaction state.')
+                self.check_transaction_sate(job)
+                return
+
             return
 
         # Compute deficit
@@ -64,10 +71,8 @@ class Fill:
         # Send transaction to fireblocks and put job into Pending state.
         self.submit_transaction(job)
 
-        # TODO:
-        # - Check if transaction was successful
-        # - If not, mark job as failed
-        # - If yes, mark job as completed
+        # Unlikely that FB has completed the transaction at this point, but check while we're here.
+        self.check_transaction_sate(job)
 
     def submit_transaction(self, job):
         if job.status != FillJob.STATUS.NEW:
@@ -90,6 +95,30 @@ class Fill:
             job.submit()
             job.save()
         except Exception as e:
-            logger.error(e)
-            traceback.print_tb(e.__traceback__)
+            logger.exception("Failed to submit fill transaction to fireblocks")
             raise e
+
+    def check_transaction_sate(self, job):
+        if job.status != FillJob.STATUS.PENDING:
+            logger.info(f'Job {job.id} is not in PENDING state, skipping.')
+            return
+
+        try:
+            tx = self.fb_client.get_transaction_by_id(job.fireblocks_transaction_id)
+            if tx['status'] == TRANSACTION_STATUS_COMPLETED:
+                logger.info(f"Found completed transaction for job {job.id}")
+                job.complete()
+                job.save()
+                return
+
+            if tx["status"] == TRANSACTION_STATUS_FAILED:
+                logger.warn(f"Found failed transaction for job {job.id}")
+                job.fail()
+                job.save()
+                return
+
+            logger.info(f"Transaction state is {tx['status']}, skipping.")
+
+        except FireblocksApiException as e:
+            logger.exception("Failed to load transaction by id")
+            return
