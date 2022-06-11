@@ -1,7 +1,4 @@
-import json
 import logging
-import traceback
-
 from django.conf import settings
 from web3 import Web3
 from web3.types import Wei
@@ -42,7 +39,7 @@ class Fill:
 
             if job.status == FillJob.STATUS.PENDING:
                 logger.info(f'Found pending job, checking transaction state.')
-                self.check_transaction_sate(job)
+                self.check_transaction_state(job)
                 return
 
             return
@@ -52,16 +49,16 @@ class Fill:
         deficit = graphapi.contract_avax_deficit() if not amount_override else amount_override
         logger.info(f'Contract deficit: {deficit}')
 
+        # Create a new job if there's a deficit.
+        if deficit == 0:
+            logger.info(f'No deficit, not creating a new job')
+            return
+
         # Check we have enough balance to make the tx.
         # TODO: Handle fees
         balance = self.fb_client.available_balance_wei(VAULT_ACCOUNT, ASSET_ID)
         if balance < deficit:
             logger.info(f'Custody balance {balance} is below deficit of {deficit}')
-            return
-
-        # Create a new job if there's a deficit.
-        if deficit == 0:
-            logger.info(f'No deficit, not creating a new job')
             return
 
         logger.info(f'Found deficit of {deficit} AVAX')
@@ -72,7 +69,7 @@ class Fill:
         self.submit_transaction(job)
 
         # Unlikely that FB has completed the transaction at this point, but check while we're here.
-        self.check_transaction_sate(job)
+        self.check_transaction_state(job)
 
     def submit_transaction(self, job):
         if job.status != FillJob.STATUS.NEW:
@@ -98,7 +95,7 @@ class Fill:
             logger.exception("Failed to submit fill transaction to fireblocks")
             raise e
 
-    def check_transaction_sate(self, job):
+    def check_transaction_state(self, job):
         if job.status != FillJob.STATUS.PENDING:
             logger.info(f'Job {job.id} is not in PENDING state, skipping.')
             return
@@ -111,7 +108,7 @@ class Fill:
                 job.save()
                 return
 
-            if tx["status"] == TRANSACTION_STATUS_FAILED:
+            if tx['status'] == TRANSACTION_STATUS_FAILED:
                 logger.warn(f"Found failed transaction for job {job.id}")
                 job.fail()
                 job.save()
