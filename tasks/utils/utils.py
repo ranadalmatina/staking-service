@@ -1,5 +1,6 @@
 import os
 
+
 def read_change_log():
     """
     Read the first four lines of the change log.
