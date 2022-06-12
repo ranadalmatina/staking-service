@@ -1,12 +1,12 @@
-from common.utils.urls import get_admin_link
-
 from django.contrib import admin, messages
 from django.utils.translation import ngettext
+
+from common.utils.explorer import get_explorer_link
+from common.utils.urls import get_admin_link
 
 from .models import (ExternalWallet, ExternalWalletAsset, FireblocksWallet, Transaction, VaultAccount, VaultAsset,
                      VaultDeposit, VaultWalletAddress, VaultWithdrawal, WithdrawalJob)
 from .utils.deposit import get_or_create_deposit, update_deposit_status
-from common.utils.explorer import get_explorer_link
 
 
 class FireblocksWalletInline(admin.TabularInline):

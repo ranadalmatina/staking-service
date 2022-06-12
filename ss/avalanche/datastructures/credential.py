@@ -4,8 +4,9 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization#credentials
 """
 
-from avalanche.datastructures.base import DataStructure
 from hexbytes import HexBytes
+
+from avalanche.datastructures.base import DataStructure
 from avalanche.tools import num_to_uint32
 
 

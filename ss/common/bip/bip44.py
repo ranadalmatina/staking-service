@@ -1,9 +1,11 @@
 # Imports
 from typing import Dict
-from bip_utils.bip.conf.common import BipCoinConf
-from bip_utils.bip.conf.common import BipCoins
+
+from bip_utils.bip.conf.common import BipCoinConf, BipCoins
+
 from .bip44_coins import Bip44Coins
 from .bip44_conf import Bip44Conf
+
 
 class Bip44ConfGetterConst:
     """Class container for Bip44 configuration getter constants."""

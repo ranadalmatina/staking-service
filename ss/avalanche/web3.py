@@ -1,7 +1,9 @@
-from django.conf import settings
+from functools import cached_property
+
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-from functools import cached_property
+
+from django.conf import settings
 
 
 class AvaWeb3:

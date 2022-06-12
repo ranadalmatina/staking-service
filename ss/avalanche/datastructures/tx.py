@@ -5,13 +5,15 @@ https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
 import hashlib
+
 from avalanche.tools import num_to_uint16, num_to_uint32, uint_to_num
-from .credential import Credential
-from .types import AtomicTx
+
+from .avm.tx import AVMExportTx, AVMImportTx
 from .base import DataStructure
+from .credential import Credential
 from .evm.tx import EVMExportTx, EVMImportTx
-from .avm.tx import AVMImportTx, AVMExportTx
-from .platform.tx import PlatformImportTx, PlatformExportTx
+from .platform.tx import PlatformExportTx, PlatformImportTx
+from .types import AtomicTx
 
 
 class UnsignedTransaction(DataStructure):

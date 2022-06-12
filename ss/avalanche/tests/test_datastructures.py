@@ -1,13 +1,16 @@
 import json
 import time
 from unittest import mock
+
 from hexbytes import HexBytes
-from django.test import TestCase
 from web3 import Web3
+from web3.types import Wei
+
+from django.test import TestCase
+
 from avalanche.datastructures import UnsignedTransaction
 from avalanche.datastructures.evm import EVMExportTx, EVMImportTx
-from avalanche.datastructures.platform import PlatformImportTx, PlatformExportTx, Validator, Delegator
-from web3.types import Wei
+from avalanche.datastructures.platform import Delegator, PlatformExportTx, PlatformImportTx, Validator
 
 
 class DataStructureTestCase(TestCase):

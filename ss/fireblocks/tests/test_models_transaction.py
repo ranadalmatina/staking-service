@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from fireblocks.factories import (VaultAccountFactory, FireblocksWalletFactory, VaultAssetFactory,
+from fireblocks.factories import (FireblocksWalletFactory, VaultAccountFactory, VaultAssetFactory,
                                   VaultWalletAddressFactory)
 
 from ..factories.transaction import DepositTransactionFactory

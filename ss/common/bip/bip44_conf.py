@@ -1,8 +1,8 @@
 # Imports
 from bip_utils.addr import AvaxPChainAddrEncoder, AvaxXChainAddrEncoder, EthAddrEncoder
-
 from bip_utils.bip.bip32 import Bip32Const, Bip32KeyNetVersions, Bip32Secp256k1
-from bip_utils.bip.conf.common import BipCoinConf, NOT_HARDENED_DEF_PATH
+from bip_utils.bip.conf.common import NOT_HARDENED_DEF_PATH, BipCoinConf
+
 from .address import FujiPChainAddrEncoder, FujiXChainAddrEncoder
 from .coin_conf import CoinsConf
 

@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+
 from avalanche.tasks import process_atomic_transaction
 
 

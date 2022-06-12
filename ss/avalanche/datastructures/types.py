@@ -1,5 +1,5 @@
+from .avm.tx import AVMExportTx, AVMImportTx
 from .evm.tx import EVMExportTx, EVMImportTx
-from .avm.tx import AVMImportTx, AVMExportTx
-from .platform.tx import PlatformImportTx, PlatformExportTx
+from .platform.tx import PlatformExportTx, PlatformImportTx
 
 AtomicTx = EVMExportTx | EVMImportTx | AVMImportTx | AVMExportTx | PlatformImportTx | PlatformExportTx

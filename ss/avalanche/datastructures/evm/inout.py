@@ -5,7 +5,9 @@ https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
 from hexbytes import HexBytes
+
 from avalanche.tools import num_to_uint32, uint_to_num
+
 from ..base import DataStructure
 
 

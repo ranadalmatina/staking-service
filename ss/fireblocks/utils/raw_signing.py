@@ -1,6 +1,5 @@
+from eth_keys.datatypes import NonRecoverableSignature, PublicKey, Signature
 from hexbytes import HexBytes
-from eth_keys.datatypes import PublicKey
-from eth_keys.datatypes import Signature, NonRecoverableSignature
 
 
 def recoverable_signature(signed_messages: list[dict]):

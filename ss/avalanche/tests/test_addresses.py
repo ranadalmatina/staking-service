@@ -1,8 +1,11 @@
 from hexbytes import HexBytes
+
 from django.test import TestCase
-from avalanche.bech32 import bech32_address_from_public_key, address_from_public_key
-from common.bip.bip44_coins import Bip44Coins
+
+from avalanche.bech32 import address_from_public_key, bech32_address_from_public_key
 from common.bip.bip32 import eth_address_from_public_key
+from common.bip.bip44_coins import Bip44Coins
+
 
 class AddressDerivationTestCase(TestCase):
 

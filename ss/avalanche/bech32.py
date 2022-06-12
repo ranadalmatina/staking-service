@@ -1,7 +1,7 @@
-from bip_utils import Bech32Decoder
-from common.bip import Bip44ConfGetter, Bip44Coins
+from bip_utils import Bech32Decoder, Bip32Secp256k1, Bip44PublicKey
+
+from common.bip import Bip44Coins, Bip44ConfGetter
 from common.bip.address import FujiCChainAddrEncoder
-from bip_utils import Bip44PublicKey, Bip32Secp256k1
 
 
 def bech32_to_bytes(addr: str)-> bytes:

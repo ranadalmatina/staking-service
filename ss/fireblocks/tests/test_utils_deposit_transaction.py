@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..factories import (VaultAccountFactory, FireblocksWalletFactory, VaultAssetFactory, VaultDepositFactory,
+from ..factories import (FireblocksWalletFactory, VaultAccountFactory, VaultAssetFactory, VaultDepositFactory,
                          VaultWalletAddressFactory)
 from ..factories.transaction import DepositTransactionFactory
 from ..models import VaultDeposit

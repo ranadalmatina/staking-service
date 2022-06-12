@@ -1,6 +1,6 @@
 import binascii
-import random
 import hashlib
+import random
 
 
 def generate_random_address(currency_code: str) -> str:

@@ -1,7 +1,10 @@
 import logging
 import random
-from django.conf import settings
+
 from web3 import Web3
+
+from django.conf import settings
+
 from avalanche.api import AvalancheClient
 
 logger = logging.Logger(__file__)

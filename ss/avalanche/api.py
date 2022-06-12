@@ -1,5 +1,6 @@
-from avalanche.datastructures.platform.validator import Validator
 import requests
+
+from avalanche.datastructures.platform.validator import Validator
 
 
 class AvalancheClient:
