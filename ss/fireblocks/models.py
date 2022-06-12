@@ -12,13 +12,12 @@ from django.db.models import CheckConstraint, ObjectDoesNotExist, Q, UniqueConst
 from django.utils import timezone
 
 from common.validators import validate_positive
+from common.constants import MAX_DEC_PLACES
 
 from .fields import NullTextField
 
+
 logger = logging.getLogger(__name__)
-
-
-MAX_DEC_PLACES = 18
 
 
 class LabelledAddress(models.Model):
