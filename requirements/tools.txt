@@ -1,0 +1,8 @@
+# These requirements are not installed automatically anywhere, but may be useful to manage parts of the project
+
+# Allows running invoke tasks from the tasks dir
+invoke==1.7.1
+
+# Used to manage project versioning
+# For setting project version in all the correct places
+bump2version==1.0.1
