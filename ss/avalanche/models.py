@@ -105,3 +105,66 @@ class AtomicTx(models.Model):
     @transition(field=status, source=[STATUS.NEW, STATUS.SUBMITTED, STATUS.BROADCAST], target=STATUS.FAILED)
     def fail(self):
         pass
+
+
+class ChainSwap(models.Model):
+    """
+    An orchestration model for managing the two atomic transactions (an export and an import)
+    that are required to swap AVAX between chains.
+    """
+    STATUS = Choices(
+        ('NEW', 'new', 'New'),
+        ('EXPORTING', 'exporting', 'Exporting'),
+        ('EXPORTED', 'exported', 'Exported'),
+        ('IMPORTING', 'importing', 'Importing'),
+        ('COMPLETE', 'complete', 'Complete'),
+        ('FAILED', 'failed', 'Failed'),
+    )
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    export_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+')
+    import_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+', null=True)
+
+    status = FSMField(max_length=30, choices=STATUS, default=STATUS.NEW)
+
+    class Meta:
+        ordering = ['-created_date']
+
+    def __str__(self):
+        return f'ChainSwap({self.id})'
+
+    def export_exists(self):
+        return self.export_tx is not None
+
+    def export_complete(self):
+        return self.export_exists() and self.export_tx.status == AtomicTx.STATUS.CONFIRMED
+
+    def import_exists(self):
+        return self.import_tx is not None
+
+    def import_complete(self):
+        return self.import_exists() and self.import_tx.status == AtomicTx.STATUS.CONFIRMED
+
+    @transition(field=status, source=STATUS.NEW, target=STATUS.EXPORTING, conditions=[export_exists])
+    def exporting(self):
+        pass
+
+    @transition(field=status, source=STATUS.EXPORTING, target=STATUS.EXPORTED, conditions=[export_complete])
+    def exported(self):
+        pass
+
+    @transition(field=status, source=STATUS.EXPORTED, target=STATUS.IMPORTING, conditions=[import_exists])
+    def importing(self):
+        pass
+
+    @transition(field=status, source=STATUS.IMPORTING, target=STATUS.COMPLETE, conditions=[import_complete])
+    def complete(self):
+        pass
+
+    @transition(field=status, source=[STATUS.EXPORTING, STATUS.IMPORTING], target=STATUS.FAILED)
+    def fail(self):
+        pass
