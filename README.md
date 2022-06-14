@@ -68,9 +68,9 @@ errors / linting / autocomplete. To fix that, you can create an local virtual en
 To get VSCode to recognise it, you may have to do `ctrl + shift + p > Python: create terminal`. Then, in that terminal:
 
 1. Ensure you're in the `staking-service` folder.
-1. If you don't have it already: `python3 -m pip install --user virtualenv`
-1. `python3 -m venv env`
-1. `source env/bin/activate`
-1. `pip install -r requirements/requirements.txt`
+2. If you don't have it already: `python3 -m pip install --user virtualenv`
+3. `python3 -m venv env`
+4. `source env/bin/activate`
+5. `pip install -r requirements/requirements.txt`
 
 The language server should now be working. You can use `deactivate` to get out of the virtual env.
