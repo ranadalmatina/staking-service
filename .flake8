@@ -1,0 +1,7 @@
+[flake8]
+ignore = B010 W504
+exclude = *migrations*
+max-line-length = 119
+inline-quotes = '
+multiline-quotes = """
+docstring-quotes = """
