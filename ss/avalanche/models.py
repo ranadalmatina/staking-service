@@ -26,7 +26,6 @@ class AtomicTx(models.Model):
         ('SIGNED', 'signed', 'Signed'),
         ('BROADCAST', 'broadcast', 'Broadcast'),
         ('CONFIRMED', 'confirmed', 'Confirmed'),
-        ('CANCELLED', 'cancelled', 'Cancelled'),
         ('REJECTED', 'rejected', 'Rejected'),
         ('FAILED', 'failed', 'Failed'),
     )
@@ -92,10 +91,6 @@ class AtomicTx(models.Model):
 
     @transition(field=status, source=STATUS.BROADCAST, target=STATUS.CONFIRMED)
     def confirm(self):
-        pass
-
-    @transition(field=status, source=[STATUS.NEW], target=STATUS.CANCELLED)
-    def cancel(self):
         pass
 
     @transition(field=status, source=[STATUS.NEW], target=STATUS.REJECTED)
