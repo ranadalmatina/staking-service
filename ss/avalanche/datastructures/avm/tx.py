@@ -122,10 +122,10 @@ class AVMImportTx(DataStructure):
         assert type_id == cls.TYPE_ID
         base = BaseTx.from_bytes(raw)
         offset = len(base)
-        source_chain = raw[offset:offset+32]
-        num_inputs = uint_to_num(raw[offset+32:offset+36])
+        source_chain = raw[offset:offset + 32]
+        num_inputs = uint_to_num(raw[offset + 32:offset + 36])
         assert num_inputs == 1
-        input = TransferableInput.from_bytes(raw[offset+36:])
+        input = TransferableInput.from_bytes(raw[offset + 36:])
         return cls(base, source_chain, [input])
 
     def to_dict(self) -> dict:

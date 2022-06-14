@@ -4,7 +4,7 @@ from common.bip import Bip44Coins, Bip44ConfGetter
 from common.bip.address import FujiCChainAddrEncoder
 
 
-def bech32_to_bytes(addr: str)-> bytes:
+def bech32_to_bytes(addr: str) -> bytes:
     if addr.startswith('fuji'):
         return Bech32Decoder.Decode('fuji', addr)
     assert addr.startswith('avax')

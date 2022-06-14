@@ -55,7 +55,7 @@ class EVMExportTx(DataStructure):
     def _inputs_from_bytes(cls, raw: bytes):
         num_inputs = uint_to_num(raw[72:76])
         start_offset = 76
-        end_offset = start_offset + 68  #EVMInput always 68 bytes long
+        end_offset = start_offset + 68  # EVMInput always 68 bytes long
         inputs = []
         # For now we know there is only one input, later remove this check
         assert num_inputs == 1
@@ -75,9 +75,9 @@ class EVMExportTx(DataStructure):
         inputs = cls._inputs_from_bytes(raw)
         # Generate outputs
         output_offset = 76 + 68 * len(inputs)
-        num_outputs = uint_to_num(raw[output_offset:output_offset+4])
+        num_outputs = uint_to_num(raw[output_offset:output_offset + 4])
         assert num_outputs == 1
-        exported_outs = [TransferableOutput.from_bytes(raw[output_offset+4:])]
+        exported_outs = [TransferableOutput.from_bytes(raw[output_offset + 4:])]
         return cls(network_id, blockchain_id, destination_chain, inputs, exported_outs)
 
     def to_dict(self) -> dict:
@@ -88,7 +88,6 @@ class EVMExportTx(DataStructure):
             'inputs': [input.to_dict() for input in self.inputs],
             'exported_outs': [output.to_dict() for output in self.exported_outs],
         }
-
 
 
 class EVMImportTx(DataStructure):
@@ -124,7 +123,7 @@ class EVMImportTx(DataStructure):
 
     def to_bytes(self) -> bytes:
         return (self.type_id + self.network_id + self.blockchain_id + self.source_chain +
-               self._inputs_bytes() + self._outputs_bytes())
+                self._inputs_bytes() + self._outputs_bytes())
 
     def __len__(self):
         return 80 + len(self.imported_inputs) + len(self.outs)

@@ -7,8 +7,6 @@ from ..models import ExternalWallet, ExternalWalletAsset, VaultAsset
 logger = logging.getLogger(__name__)
 
 
-
-
 def _create_external_wallet(name: str) -> ExternalWallet:
     """
     Call Fireblocks and create new external wallet

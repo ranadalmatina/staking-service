@@ -64,7 +64,6 @@ class UnsignedTransaction(DataStructure):
         }
 
 
-
 class SignedTransaction(DataStructure):
     """
     Contains an unsigned AtomicTX and credentials.

@@ -57,7 +57,6 @@ def process_chain_swap():
     for swap in ChainSwap.objects.filter(status=ChainSwap.STATUS.EXPORTED):
         create_import_fn = create_import_tx(source_chain=swap.source_chain)
         create_import_fn(swap=swap)
-        # swap.refresh_from_db()
         swap.importing()
         swap.save()
         process_atomic_transaction()

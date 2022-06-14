@@ -13,7 +13,8 @@ class Delegator:
 
 class Validator:
 
-    def __init__(self, node_id, uptime: float, stake: Wei, start_time: int, end_time: int, delegators: list[Delegator]):
+    def __init__(self, node_id, uptime: float, stake: Wei, start_time: int, end_time: int,
+                 delegators: list[Delegator]):
         self.node_id = node_id
         self.uptime = uptime
         self.stake = stake
