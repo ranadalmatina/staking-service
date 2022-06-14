@@ -1,5 +1,6 @@
 from invoke import task
 
+
 @task
 def security(c):
     c.run('safety check -r requirements/requirements_prod.txt')

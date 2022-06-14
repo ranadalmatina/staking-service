@@ -5,7 +5,8 @@ from django_fsm import TransitionNotAllowed
 from django.conf import settings
 
 from ..client import get_fireblocks_client
-from ..models import FireblocksWallet, Transaction, VaultAccount, VaultAsset, VaultDeposit, VaultWalletAddress, LabelledAddress
+from ..models import (FireblocksWallet, LabelledAddress, Transaction, VaultAccount, VaultAsset, VaultDeposit,
+                      VaultWalletAddress)
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand
+
 from staking.contracts import Contracts
 from staking.graphql import GraphAPI
 

@@ -1,6 +1,7 @@
+from api.models import Deposit
+
 from django.core.management.base import BaseCommand
 
-from api.models import Deposit
 from fireblocks.models import Transaction, VaultDeposit, VaultWalletAddress
 
 

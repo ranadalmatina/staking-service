@@ -4,9 +4,11 @@ the specifications located at
 https://docs.avax.network/specs/avm-transaction-serialization
 """
 
-from avalanche.constants import XChainAlias
 from hexbytes import HexBytes
+
+from avalanche.constants import XChainAlias
 from avalanche.tools import num_to_uint32, uint_to_num
+
 from ..base import DataStructure
 from ..evm.inout import TransferableInput, TransferableOutput
 

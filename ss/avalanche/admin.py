@@ -1,7 +1,8 @@
 from django.contrib import admin, messages
 
-from .models import AtomicTx
 from common.utils.explorer import get_explorer_link
+
+from .models import AtomicTx
 
 
 @admin.register(AtomicTx)

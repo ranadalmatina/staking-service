@@ -1,13 +1,17 @@
 import logging
-from django.conf import settings
-from web3 import Web3
-from web3.types import Wei
-from .models import FillJob
-from staking.graphql import GraphAPI
-from staking.contracts import Contracts
-from fireblocks.client import get_fireblocks_client
+
 from fireblocks_sdk import TRANSACTION_STATUS_COMPLETED, TRANSACTION_STATUS_FAILED
 from fireblocks_sdk.api_types import FireblocksApiException
+from web3 import Web3
+from web3.types import Wei
+
+from django.conf import settings
+
+from fireblocks.client import get_fireblocks_client
+from staking.contracts import Contracts
+from staking.graphql import GraphAPI
+
+from .models import FillJob
 
 pending_states = [FillJob.STATUS.NEW, FillJob.STATUS.PENDING]
 

@@ -5,6 +5,7 @@ https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
 from abc import ABC, abstractmethod
+
 from hexbytes import HexBytes
 
 

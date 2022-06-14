@@ -1,18 +1,20 @@
 import uuid
-from django.test import TestCase
-
-from web3 import Web3
-from web3.types import Wei
 from decimal import Decimal
 from unittest import mock
 
-from .factories import FillJobFactory
-from .models import FillJob
-from .fill import Fill, ASSET_ID, FB_CONTRACT_ID, VAULT_ACCOUNT
-from fireblocks.client import FireblocksClient
-from fireblocks_sdk.api_types import FireblocksApiException
 from fireblocks_sdk import TRANSACTION_STATUS_COMPLETED, TRANSACTION_STATUS_FAILED
+from fireblocks_sdk.api_types import FireblocksApiException
+from web3 import Web3
+from web3.types import Wei
+
+from django.test import TestCase
+
+from fireblocks.client import FireblocksClient
 from staking.graphql import GraphAPI
+
+from .factories import FillJobFactory
+from .fill import ASSET_ID, FB_CONTRACT_ID, VAULT_ACCOUNT, Fill
+from .models import FillJob
 
 
 class FillJobModelTestCase(TestCase):

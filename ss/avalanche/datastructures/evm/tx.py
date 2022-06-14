@@ -4,11 +4,14 @@ the specifications located at
 https://docs.avax.network/specs/coreth-atomic-transaction-serialization
 """
 
-from avalanche.constants import CChainAlias
 from hexbytes import HexBytes
-from ..base import DataStructure
+
+from avalanche.constants import CChainAlias
 from avalanche.tools import num_to_uint32, uint_to_num
+
+from ..base import DataStructure
 from .inout import EVMInput, EVMOutput, TransferableInput, TransferableOutput
+
 
 class EVMExportTx(DataStructure):
     """

@@ -1,6 +1,7 @@
 from avalanche.constants import PChainAlias
-from ..avm import AVMImportTx, AVMExportTx
 from avalanche.tools import num_to_uint32
+
+from ..avm import AVMExportTx, AVMImportTx
 
 
 class PlatformImportTx(AVMImportTx):

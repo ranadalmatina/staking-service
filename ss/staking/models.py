@@ -1,12 +1,15 @@
 import uuid
+from decimal import Decimal
+
+from django_fsm import FSMField, transition
+from extended_choices import Choices
 from web3 import Web3
 from web3.types import Wei
-from decimal import Decimal
+
 from django.db import models
-from extended_choices import Choices
-from django_fsm import FSMField, transition
-from common.validators import validate_positive
+
 from common.constants import MAX_DEC_PLACES
+from common.validators import validate_positive
 
 
 class FillJob(models.Model):

@@ -2,12 +2,12 @@ import logging
 import os.path
 from decimal import Decimal
 
-from fireblocks_sdk import EXTERNAL_WALLET, UNKNOWN_PEER, VAULT_ACCOUNT, UnsignedMessage, RawMessage, CONTRACT_CALL
+from fireblocks_sdk import CONTRACT_CALL, EXTERNAL_WALLET, UNKNOWN_PEER, VAULT_ACCOUNT, RawMessage, UnsignedMessage
 from fireblocks_sdk.sdk import DestinationTransferPeerPath, FireblocksApiException, FireblocksSDK, TransferPeerPath
-
-from django.conf import settings
 from web3 import Web3
 from web3.types import Wei
+
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 

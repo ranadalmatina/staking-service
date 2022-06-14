@@ -1,10 +1,12 @@
-import os
 import json
+import os
+from enum import Enum
+
+from web3 import Web3
+
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from enum import Enum
-from django.conf import settings
-from web3 import Web3
 from avalanche.web3 import AvaWeb3
 
 

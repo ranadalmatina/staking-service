@@ -1,12 +1,14 @@
 import logging
-from re import A
 import traceback
-from django.conf import settings
+
 from web3 import Web3
-from avalanche.web3 import AvaWeb3
+
+from django.conf import settings
+
 from avalanche.models import AtomicTx
 from avalanche.transactions import create_cchain_export_to_pchain
-from common.bip.bip32 import public_key_from_string, eth_address_from_public_key
+from avalanche.web3 import AvaWeb3
+from common.bip.bip32 import eth_address_from_public_key, public_key_from_string
 
 logger = logging.getLogger(__name__)
 

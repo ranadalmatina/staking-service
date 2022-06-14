@@ -11,11 +11,10 @@ from django.db import models
 from django.db.models import CheckConstraint, ObjectDoesNotExist, Q, UniqueConstraint
 from django.utils import timezone
 
-from common.validators import validate_positive
 from common.constants import MAX_DEC_PLACES
+from common.validators import validate_positive
 
 from .fields import NullTextField
-
 
 logger = logging.getLogger(__name__)
 

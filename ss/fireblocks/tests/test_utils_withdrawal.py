@@ -6,8 +6,8 @@ from fireblocks_sdk import FireblocksApiException
 from django.test import TestCase
 
 from ..exceptions import BroadcastFailed, IllegalWithdrawalState
-from ..factories import (VaultAccountFactory, ExternalWalletAssetFactory, ExternalWalletFactory,
-                         VaultAssetFactory, VaultWithdrawalFactory)
+from ..factories import (ExternalWalletAssetFactory, ExternalWalletFactory, VaultAccountFactory, VaultAssetFactory,
+                         VaultWithdrawalFactory)
 from ..factories.transaction import WithdrawalTransactionFactory
 from ..models import VaultWithdrawal
 from ..utils.withdrawal import broadcast_withdrawal, get_or_create_withdrawal

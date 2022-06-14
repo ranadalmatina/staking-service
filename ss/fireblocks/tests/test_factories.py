@@ -3,10 +3,10 @@ from decimal import Decimal
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 
-from ..factories import (VaultAccountFactory, ConfirmedWithdrawalFactory, ExternalWalletAssetFactory,
-                         ExternalWalletFactory, FireblocksWalletFactory, SuccessfulDepositFactory,
-                         SuccessfulWithdrawalJobFactory, VaultAssetFactory, VaultDepositFactory,
-                         VaultWalletAddressFactory, VaultWithdrawalFactory, WithdrawalJobFactory)
+from ..factories import (ConfirmedWithdrawalFactory, ExternalWalletAssetFactory, ExternalWalletFactory,
+                         FireblocksWalletFactory, SuccessfulDepositFactory, SuccessfulWithdrawalJobFactory,
+                         VaultAccountFactory, VaultAssetFactory, VaultDepositFactory, VaultWalletAddressFactory,
+                         VaultWithdrawalFactory, WithdrawalJobFactory)
 from ..models import (ExternalWallet, ExternalWalletAsset, FireblocksWallet, Transaction, VaultAccount, VaultAsset,
                       VaultDeposit, VaultWalletAddress, VaultWithdrawal, WithdrawalJob)
 

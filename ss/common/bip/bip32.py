@@ -1,7 +1,8 @@
-from django.conf import settings
 from bip_utils import EthAddrEncoder
 from bip_utils.bip.bip32 import Bip32Secp256k1
 from bip_utils.ecc.secp256k1_keys_coincurve import Secp256k1PublicKeyCoincurve
+
+from django.conf import settings
 
 
 def fireblocks_public_key(derivation_path="44/1/0/0/0"):

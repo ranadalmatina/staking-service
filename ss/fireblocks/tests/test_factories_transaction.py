@@ -2,7 +2,7 @@ from datetime import datetime
 
 from common.testing import TestCase
 
-from ..factories import VaultAccountFactory, ExternalWalletFactory
+from ..factories import ExternalWalletFactory, VaultAccountFactory
 from ..factories.transaction import (DepositTransactionDataFactory, DepositTransactionFactory,
                                      WithdrawalTransactionDataFactory, WithdrawalTransactionFactory)
 from ..models import Transaction

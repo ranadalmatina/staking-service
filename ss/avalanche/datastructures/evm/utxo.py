@@ -1,5 +1,7 @@
-from avalanche.tools import num_to_uint16, uint_to_num
 from hexbytes import HexBytes
+
+from avalanche.tools import num_to_uint16, uint_to_num
+
 from ..base import DataStructure
 from .inout import SECPTransferOutput
 

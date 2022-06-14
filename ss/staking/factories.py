@@ -1,4 +1,5 @@
 from decimal import Decimal
+
 from factory.django import DjangoModelFactory
 
 from .models import FillJob

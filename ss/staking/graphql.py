@@ -1,5 +1,6 @@
 import logging
-from gql import gql, Client
+
+from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 from gql.transport.aiohttp import log as requests_logger
 from web3 import Web3

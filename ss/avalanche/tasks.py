@@ -3,7 +3,7 @@ import logging
 from celery import shared_task
 
 from .models import AtomicTx
-from .utils.tx_builder import send_for_signing, check_for_signature, broadcast_transaction
+from .utils.tx_builder import broadcast_transaction, check_for_signature, send_for_signing
 
 logger = logging.getLogger(__name__)
 
