@@ -113,7 +113,7 @@ class Fill:
                 return
 
             if tx['status'] == TRANSACTION_STATUS_FAILED:
-                logger.warn(f"Found failed transaction for job {job.id}")
+                logger.warning(f"Found failed transaction for job {job.id}")
                 job.fail()
                 job.save()
                 return
