@@ -85,6 +85,12 @@ def broadcast_transaction(tx: AtomicTx):
     unsigned_tx = tx.get_unsigned_transaction()
     source_chain = unsigned_tx.get_source_chain()
 
+    def fail_tx(response, msg: str):
+        logger.error(response)
+        tx.fail()
+        tx.save()
+        raise Exception(msg)  # TODO customise exception class
+
     def get_issue_tx():
         client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
         issue_tx = {
@@ -100,16 +106,22 @@ def broadcast_transaction(tx: AtomicTx):
     response = issue_tx(tx.signed_transaction)
     if response.status_code == 200:
         response = response.json()
-        print(response)
-        if 'error' in response:
-            tx.fail()
-            tx.save()
-            raise Exception("Error while issuing transaction")
-
         if 'result' in response:
+            logger.info(response)
             result = response['result']
             if 'txID' in result:
                 tx.avalanche_tx_id = result['txID']
                 tx.confirm()
                 tx.save()
-    # TODO handle other types of exception from Avalanche and customise exception class
+
+        elif 'error' in response:
+            fail_tx(response, msg=f"Error while issuing transaction: {response['error']}")
+        else:
+            # JSON response here
+            logger.error('Unknown response type from Avalanche')
+            fail_tx(response, msg="Unknown error while issuing transaction")
+
+    else:
+        # Some other error code. Unknown response
+        logger.error('Unknown response type from Avalanche')
+        fail_tx(response, msg="Unknown error while issuing transaction")
