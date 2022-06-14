@@ -65,6 +65,7 @@ class AtomicTx(models.Model):
 
     @transition(field=status, source=STATUS.NEW, target=STATUS.SUBMITTED)
     def submit(self):
+        # Send transaction to Fireblocks for signing
         pass
 
     @transition(field=status, source=STATUS.SUBMITTED, target=STATUS.NEW)
@@ -74,14 +75,17 @@ class AtomicTx(models.Model):
 
     @transition(field=status, source=STATUS.SUBMITTED, target=STATUS.AWAITING_SIGNATURE)
     def queue(self):
+        # Successfully sent to Fireblocks. Awaiting signature from Firebolcks
         pass
 
     @transition(field=status, source=STATUS.AWAITING_SIGNATURE, target=STATUS.SIGNED)
     def sign(self):
+        # Signature received from Fireblocks. Transaction signed
         pass
 
     @transition(field=status, source=STATUS.SIGNED, target=STATUS.BROADCAST)
     def broadcast(self):
+        # Transaction broadcast to Avalanche network
         pass
 
     @transition(field=status, source=STATUS.BROADCAST, target=STATUS.SIGNED)
@@ -91,6 +95,7 @@ class AtomicTx(models.Model):
 
     @transition(field=status, source=STATUS.BROADCAST, target=STATUS.CONFIRMED)
     def confirm(self):
+        # Transaction successfully broadcast, tx_id returned
         pass
 
     @transition(field=status, source=[STATUS.NEW], target=STATUS.REJECTED)
