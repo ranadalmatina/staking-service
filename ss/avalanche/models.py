@@ -10,7 +10,7 @@ from avalanche.base58 import Base58Decoder
 from avalanche.datastructures import UnsignedTransaction
 from avalanche.datastructures.types import AtomicTx as AtomicTxType
 from common.constants import MAX_DEC_PLACES
-from common.validators import validate_positive
+from common.validators import validate_p_or_c, validate_positive
 
 logger = logging.getLogger(__name__)
 
@@ -116,6 +116,7 @@ class ChainSwap(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    source_chain = models.CharField(max_length=1, help_text="Either C or P", validators=[validate_p_or_c])
     export_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+')
     import_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+', null=True)
 
