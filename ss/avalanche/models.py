@@ -68,11 +68,6 @@ class AtomicTx(models.Model):
         # Send transaction to Fireblocks for signing
         pass
 
-    @transition(field=status, source=STATUS.SUBMITTED, target=STATUS.NEW)
-    def resubmit(self):
-        # TODO testing only. Remove later
-        pass
-
     @transition(field=status, source=STATUS.SUBMITTED, target=STATUS.AWAITING_SIGNATURE)
     def queue(self):
         # Successfully sent to Fireblocks. Awaiting signature from Firebolcks
@@ -86,11 +81,6 @@ class AtomicTx(models.Model):
     @transition(field=status, source=STATUS.SIGNED, target=STATUS.BROADCAST)
     def broadcast(self):
         # Transaction broadcast to Avalanche network
-        pass
-
-    @transition(field=status, source=STATUS.BROADCAST, target=STATUS.SIGNED)
-    def rebroadcast(self):
-        # TODO testing only. Remove later
         pass
 
     @transition(field=status, source=STATUS.BROADCAST, target=STATUS.CONFIRMED)

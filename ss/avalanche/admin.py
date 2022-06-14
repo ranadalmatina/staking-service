@@ -1,4 +1,4 @@
-from django.contrib import admin, messages
+from django.contrib import admin
 
 from common.utils.explorer import get_explorer_link
 
@@ -28,19 +28,3 @@ class AtomicTxAdmin(admin.ModelAdmin):
             unsigned_tx = obj.get_unsigned_transaction()
             return unsigned_tx.get_tx_type().__name__
         return None
-
-    def resubmit(self, request, queryset):
-        for tx in queryset:
-            tx.resubmit()
-            tx.save()
-            self.message_user(request, f'Reset state for {tx}', messages.SUCCESS)
-
-    resubmit.short_description = 'Resubmit'
-
-    def rebroadcast(self, request, queryset):
-        for tx in queryset:
-            tx.rebroadcast()
-            tx.save()
-            self.message_user(request, f'Reset state for {tx}', messages.SUCCESS)
-
-    rebroadcast.short_description = 'Rebroadcast'
