@@ -102,6 +102,8 @@ def broadcast_transaction(tx: AtomicTx):
         response = response.json()
         print(response)
         if 'error' in response:
+            tx.fail()
+            tx.save()
             raise Exception("Error while issuing transaction")
 
         if 'result' in response:
