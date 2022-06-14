@@ -143,11 +143,11 @@ class ChainSwap(models.Model):
     def import_complete(self):
         return self.import_exists() and self.import_tx.status == AtomicTx.STATUS.CONFIRMED
 
-    def imported_failed(self):
+    def import_failed(self):
         return self.import_exists() and self.import_tx.status == AtomicTx.STATUS.FAILED
 
     def should_fail(self):
-        return self.export_failed() or self.imported_failed()
+        return self.export_failed() or self.import_failed()
 
     @transition(field=status, source=STATUS.NEW, target=STATUS.EXPORTING, conditions=[export_exists])
     def exporting(self):
