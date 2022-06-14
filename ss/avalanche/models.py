@@ -118,7 +118,7 @@ class ChainSwap(models.Model):
 
     source_chain = models.CharField(max_length=1, help_text="Either C or P", validators=[validate_p_or_c])
     export_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+')
-    import_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+', null=True)
+    import_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
     status = FSMField(max_length=30, choices=STATUS, default=STATUS.NEW)
 

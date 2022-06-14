@@ -7,5 +7,5 @@ def validate_positive(value):
 
 
 def validate_p_or_c(value: str):
-    if value != 'P' or value != 'C':
+    if value not in ('P', 'C'):
         raise ValidationError("Only 'P' or 'C' allowed.")
