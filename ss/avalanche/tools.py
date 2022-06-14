@@ -13,18 +13,18 @@ def num_to_uint64(num: int) -> bytes:
 def uint_to_num(uint: bytes) -> int:
     return int.from_bytes(uint, byteorder='big', signed=False)
 
-def from_nano_avax(amount: Decimal) -> Decimal:
+def from_nano_avax(amount: int) -> Decimal:
     """
     Convert from nAVAX to AVAX
     :param amount: amount in nAVAX
     :return: amount in AVAX
     """
-    return amount / Decimal('10')**9
+    return Decimal(amount) / Decimal('10')**9
 
-def to_nano_avax(amount: Decimal) -> Decimal:
+def to_nano_avax(amount: Decimal) -> int:
     """
     Convert from AVAX to nAVAX
     :param amount: amount in AVAX
     :return: amount in nAVAX
     """
-    return amount * Decimal('10')**9
+    return int(amount * 10**9)
