@@ -11,10 +11,10 @@ class AvalancheClient:
     X_CHAIN = "/ext/bc/X"
     P_CHAIN = "/ext/bc/P"
 
-    def __init__(self, RPC_URL=None):
-        if RPC_URL is None:
+    def __init__(self, rpc_url=None):
+        if rpc_url is None:
             raise Exception("RPC URL is not set")
-        self.url = RPC_URL
+        self.url = rpc_url
 
     @property
     def rpc_url(self):
