@@ -39,4 +39,5 @@ class SECP256K1Credential(DataStructure):
             'signatures': [HexBytes(sig).hex() for sig in self.signatures]
         }
 
+
 Credential = SECP256K1Credential

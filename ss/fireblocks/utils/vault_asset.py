@@ -17,8 +17,6 @@ def get_or_create_vault_asset(asset_id: str, is_erc_20: bool) -> VaultAsset:
     except VaultAsset.DoesNotExist:
         vault_asset = _create_vault_asset_on_fireblocks(asset_id=asset_id, is_erc_20=is_erc_20)
 
-    # Ensure that we always have a matching Currency object.
-    _create_currency_object(vault_asset=vault_asset)
     return vault_asset
 
 
@@ -39,14 +37,3 @@ def _create_vault_asset_on_fireblocks(asset_id: str, is_erc_20: bool) -> VaultAs
     vault_asset = VaultAsset.objects.create(asset_id=asset_id, is_erc_20=is_erc_20)
     FireblocksWallet.objects.create(vault_account=vault_account, asset=vault_asset)
     return vault_asset
-
-
-def _create_currency_object(vault_asset: VaultAsset):
-    """
-    Create empty currency object to avoid splitting V1 and V2
-    """
-    currency_code = vault_asset.get_currency_code()
-    defaults = {
-        'dec_places': 0,
-        'is_enabled': True,
-    }

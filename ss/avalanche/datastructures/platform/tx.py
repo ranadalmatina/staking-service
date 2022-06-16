@@ -12,7 +12,6 @@ class PlatformImportTx(AVMImportTx):
     SOURCE_CHAIN = PChainAlias
 
 
-
 class PlatformExportTx(AVMExportTx):
     """
     Platform Unsigned Export TX

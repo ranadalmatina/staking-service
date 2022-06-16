@@ -10,7 +10,7 @@ from avalanche.base58 import Base58Decoder
 from avalanche.datastructures import UnsignedTransaction
 from avalanche.datastructures.types import AtomicTx as AtomicTxType
 from common.constants import MAX_DEC_PLACES
-from common.validators import validate_positive
+from common.validators import validate_p_or_c, validate_positive
 
 logger = logging.getLogger(__name__)
 
@@ -116,8 +116,9 @@ class ChainSwap(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    source_chain = models.CharField(max_length=1, help_text="Either C or P", validators=[validate_p_or_c])
     export_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+')
-    import_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+', null=True)
+    import_tx = models.ForeignKey('AtomicTx', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
     status = FSMField(max_length=30, choices=STATUS, default=STATUS.NEW)
 
@@ -133,11 +134,20 @@ class ChainSwap(models.Model):
     def export_complete(self):
         return self.export_exists() and self.export_tx.status == AtomicTx.STATUS.CONFIRMED
 
+    def export_failed(self):
+        return self.export_exists() and self.export_tx.status == AtomicTx.STATUS.FAILED
+
     def import_exists(self):
         return self.import_tx is not None
 
     def import_complete(self):
         return self.import_exists() and self.import_tx.status == AtomicTx.STATUS.CONFIRMED
+
+    def import_failed(self):
+        return self.import_exists() and self.import_tx.status == AtomicTx.STATUS.FAILED
+
+    def should_fail(self):
+        return self.export_failed() or self.import_failed()
 
     @transition(field=status, source=STATUS.NEW, target=STATUS.EXPORTING, conditions=[export_exists])
     def exporting(self):

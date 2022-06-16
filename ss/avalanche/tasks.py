@@ -2,10 +2,8 @@ import logging
 
 from celery import shared_task
 
-from django.db import transaction
-
 from .models import AtomicTx, ChainSwap
-from .utils.pchain_import_from_cchain import PChainImportFromPChain
+from .utils.chain_swap import create_import_tx
 from .utils.tx_builder import broadcast_transaction, check_for_signature, send_for_signing
 
 logger = logging.getLogger(__name__)
@@ -38,6 +36,14 @@ def process_chain_swap():
     constitute the entire swap.
     """
     logger.info('Processing Chain swap')
+    # First check if any ChainSwap objects have failed AtomicTx children. If they do fail the entire swap
+    for swap in ChainSwap.objects.filter(status__in=[ChainSwap.STATUS.EXPORTING, ChainSwap.STATUS.IMPORTING]):
+        if swap.should_fail():
+            swap.fail()
+            swap.save()
+            logger.error(f'Chainswap {swap} failed')
+
+    # Process each status in turn
     for swap in ChainSwap.objects.filter(status=ChainSwap.STATUS.NEW):
         swap.exporting()
         swap.save()
@@ -49,13 +55,8 @@ def process_chain_swap():
         else:
             process_atomic_transaction()
     for swap in ChainSwap.objects.filter(status=ChainSwap.STATUS.EXPORTED):
-        # Create import
-        with transaction.atomic():
-            import_ = PChainImportFromPChain(network_id=5)
-            import_tx = import_.build_transaction()
-            swap.import_tx = import_tx
-            swap.save()
-
+        create_import_fn = create_import_tx(source_chain=swap.source_chain)
+        create_import_fn(swap=swap)
         swap.importing()
         swap.save()
         process_atomic_transaction()
@@ -66,6 +67,3 @@ def process_chain_swap():
             swap.save()
         else:
             process_atomic_transaction()
-
-    # TODO filter for ChainSwap that are incomplete and check for failed AtomicTxs
-    # Then fail the ChainSwap object too

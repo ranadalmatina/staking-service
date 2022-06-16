@@ -122,6 +122,7 @@ class CreatVaultWithdrawalTestCase(TestCase):
         self.assertTrue(mock_create_external_wallet.called)
         self.assertTrue(mock_create_external_wallet_asset.called)
 
+
 @skip
 @mock.patch('fireblocks.utils.external_wallet._create_external_wallet_asset')
 @mock.patch('fireblocks.utils.external_wallet._create_external_wallet')

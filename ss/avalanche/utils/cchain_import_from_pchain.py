@@ -3,7 +3,6 @@ from decimal import Decimal
 from hexbytes import HexBytes
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
 
 from avalanche.api import AvalancheClient
 from avalanche.base58 import Base58Decoder, Base58Encoder
@@ -17,11 +16,13 @@ from common.bip.bip32 import eth_address_from_public_key, fireblocks_public_key
 from common.bip.bip44_coins import Bip44Coins
 
 
-class Command(BaseCommand):
-    help = "Create a C-Chain import transaction from P-Chain using Fireblocks."
+class CChainImportFromPChain:
+    """
+    Create a C-Chain import transaction from P-Chain using Fireblocks.
+    """
 
-    def handle(self, *args, **options):
-        self.build_transaction()
+    def __init__(self, network_id):
+        self.network_id = network_id
 
     def get_to_address(self):
         # This is the only derivation path we are allowed on test workspace
@@ -50,6 +51,7 @@ class Command(BaseCommand):
         print(unsigned_tx.to_hex())
         print('----------HASH----------')
         print(unsigned_tx.hash().hex())
+        return import_tx
 
     def get_utxos(self, destination_address):
         client = AvalancheClient(RPC_URL=settings.AVAX_RPC_URL)
@@ -101,13 +103,10 @@ class Command(BaseCommand):
         return outputs, inputs
 
     def build_import_tx(self, to_address: str):
-        network_id = 5
-        p_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['P']['blockchainID']
-        assert p_chain_blockchain_id_str == "11111111111111111111111111111111LpoYY"
+        p_chain_blockchain_id_str: str = DEFAULTS['networks'][self.network_id]['P']['blockchainID']
         p_chain_blockchain_id_buf = Base58Decoder.CheckDecode(p_chain_blockchain_id_str)
 
-        c_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['C']['blockchainID']
-        assert c_chain_blockchain_id_str == 'yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp'
+        c_chain_blockchain_id_str: str = DEFAULTS['networks'][self.network_id]['C']['blockchainID']
         c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(c_chain_blockchain_id_str)
 
         network_id = num_to_uint32(5)

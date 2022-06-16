@@ -14,7 +14,6 @@ from pathlib import Path
 
 import dj_database_url
 import environ
-from web3 import Web3
 
 # Setup Django environ
 env = environ.Env()

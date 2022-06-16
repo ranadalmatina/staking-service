@@ -1,3 +1,3 @@
-from .inout import *
-from .tx import *
-from .utxo import *
+from .inout import *  # noqa
+from .tx import *  # noqa
+from .utxo import *  # noqa
