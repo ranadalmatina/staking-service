@@ -38,6 +38,56 @@ NetworkIDToHRP = {
     12345: "local"
 }
 
+# Start mainnet
+avaxAssetID = "FvwEAhmxKfeiG8SnEvq42hc6whRyY3EFYAvebMqDNDGCgxN5Z"
+n1X = {
+  'blockchainID': "2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM",
+  'avaxAssetID': avaxAssetID,
+  'alias': XChainAlias,
+  'vm': XChainVMName,
+  'txFee': MILLIAVAX,
+  'creationTxFee': CENTIAVAX,
+  'mintTxFee': MILLIAVAX
+}
+
+n1P = {
+  'blockchainID': PlatformChainID,
+  'avaxAssetID': avaxAssetID,
+  'alias': PChainAlias,
+  'vm': PChainVMName,
+  'txFee': MILLIAVAX,
+  'createSubnetTx': ONEAVAX,
+  'createChainTx': ONEAVAX,
+  'creationTxFee': CENTIAVAX,
+  'minConsumption': 0.1,
+  'maxConsumption': 0.12,
+  'maxStakingDuration': 31536000,
+  'maxSupply': 720000000 * ONEAVAX,
+  'minStake': ONEAVAX * 2000,
+  'minStakeDuration': 2 * 7 * 24 * 60 * 60, # two weeks
+  'maxStakeDuration': 365 * 24 * 60 * 60, # one year
+  'minDelegationStake': ONEAVAX * 25,
+  'minDelegationFee': 2
+}
+
+n1C = {
+  'blockchainID': "2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5",
+  'alias': CChainAlias,
+  'vm': CChainVMName,
+  'txBytesGas': 1,
+  'costPerSignature': 1000,
+  # DEPRECATED - txFee
+  # WILL BE REMOVED IN NEXT MAJOR VERSION BUMP
+  'txFee': MILLIAVAX,
+  # DEPRECATED - gasPrice
+  # WILL BE REMOVED IN NEXT MAJOR VERSION BUMP
+  'gasPrice': GWEI * 225,
+  'minGasPrice': GWEI * 25,
+  'maxGasPrice': GWEI * 1000,
+  'chainID': 43114
+}
+# End Mainnet
+
 
 # Start Fuji
 avaxAssetID = "U8iRqJoiJm8xZHAacmvYyZVwqQx6uDNtQeP3CQ6fcgQk3JqnK"
@@ -104,6 +154,15 @@ n12345C['chainID'] = 43112
 
 DEFAULTS = {
     'networks': {
+        1: {
+              'hrp': NetworkIDToHRP[1],
+              'X': n1X,
+              "2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM": n1X,
+              'P': n1P,
+              "11111111111111111111111111111111LpoYY": n1P,
+              'C': n1C,
+              "2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5": n1C
+            },
         5: {
             'hrp': NetworkIDToHRP[5],
             'X': n5X,
