@@ -103,13 +103,10 @@ class CChainImportFromPChain:
         return outputs, inputs
 
     def build_import_tx(self, to_address: str):
-        network_id = 5
-        p_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['P']['blockchainID']
-        assert p_chain_blockchain_id_str == "11111111111111111111111111111111LpoYY"
+        p_chain_blockchain_id_str: str = DEFAULTS['networks'][self.network_id]['P']['blockchainID']
         p_chain_blockchain_id_buf = Base58Decoder.CheckDecode(p_chain_blockchain_id_str)
 
-        c_chain_blockchain_id_str: str = DEFAULTS['networks'][network_id]['C']['blockchainID']
-        assert c_chain_blockchain_id_str == 'yH8D7ThNJkxmtkuv2jgBa4P1Rn3Qpr4pPr7QYNfcdoS6k6HWp'
+        c_chain_blockchain_id_str: str = DEFAULTS['networks'][self.network_id]['C']['blockchainID']
         c_chain_blockchain_id_buf = Base58Decoder.CheckDecode(c_chain_blockchain_id_str)
 
         network_id = num_to_uint32(5)
