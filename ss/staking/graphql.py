@@ -26,7 +26,7 @@ class GraphAPI:
         requests_logger.setLevel(logging.WARNING)
 
     def contract_avax_deficit(self) -> Wei:
-      # TODO: Handle errors described here https://gql.readthedocs.io/en/latest/advanced/error_handling.html
+        # TODO: Handle errors described here https://gql.readthedocs.io/en/latest/advanced/error_handling.html
         result = self.client.execute(deficit_query)
         if result:
             amount = result['deficitTotal']['avaxAmount']

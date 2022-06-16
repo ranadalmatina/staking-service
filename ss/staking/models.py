@@ -43,7 +43,6 @@ class FillJob(models.Model):
     def amount_wei(self, value: Wei):
         self.amount = Decimal(Web3.fromWei(value, 'ether'))
 
-
     @transition(field=status, source=STATUS.NEW, target=STATUS.PENDING)
     def submit(self):
         pass
