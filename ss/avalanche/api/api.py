@@ -125,13 +125,15 @@ class AvalancheClient:
         })
         return response
 
-    def platform_get_current_validators(self, nodeIDs: list[str] = [], encoding="cb58"):
+    def platform_get_current_validators(self, nodes_ids: list[str] = None, encoding="cb58"):
+        if nodes_ids is None:
+            nodes_ids = []
         response = requests.post(self.p_chain_rpc_url, json={
             "jsonrpc": "2.0",
             "id": 1,
             "method": "platform.getCurrentValidators",
             "params": {
-                "nodeIDs": nodeIDs,  # empty array returns all validators
+                "nodes_ids": nodes_ids,  # empty array returns all validators
                 "encoding": encoding
             }
         })
