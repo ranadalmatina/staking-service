@@ -1,6 +1,6 @@
 import requests
 
-from avalanche.datastructures.platform.validator import Validator
+from .validator import Validator
 
 
 class AvalancheClient:
@@ -11,10 +11,10 @@ class AvalancheClient:
     X_CHAIN = "/ext/bc/X"
     P_CHAIN = "/ext/bc/P"
 
-    def __init__(self, RPC_URL=None):
-        if RPC_URL is None:
+    def __init__(self, rpc_url=None):
+        if rpc_url is None:
             raise Exception("RPC URL is not set")
-        self.url = RPC_URL
+        self.url = rpc_url
 
     @property
     def rpc_url(self):
@@ -125,13 +125,15 @@ class AvalancheClient:
         })
         return response
 
-    def platform_get_current_validators(self, nodeIDs: list[str] = [], encoding="cb58"):
+    def platform_get_current_validators(self, node_ids: list[str] = None, encoding="cb58"):
+        if node_ids is None:
+            node_ids = []
         response = requests.post(self.p_chain_rpc_url, json={
             "jsonrpc": "2.0",
             "id": 1,
             "method": "platform.getCurrentValidators",
             "params": {
-                "nodeIDs": nodeIDs,  # empty array returns all validators
+                "nodeIDs": node_ids,  # empty array returns all validators
                 "encoding": encoding
             }
         })
